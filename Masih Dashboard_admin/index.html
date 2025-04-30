@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <div class="logo">Admin</div>
+    <nav>
+      <a href="#">Dashboard</a>
+      <a href="#">Orders</a>
+      <a href="#">Products</a>
+      <a href="#">Customers</a>
+    </nav>
+    <input type="text" placeholder="Search in site" />
+  </header>
+
+  <main>
+    <h1>Welcome to Dashboard Admin</h1>
+    <p>Manage your motor workshop efficiently</p>
+    <input type="text" placeholder="Search for products" class="search-product" />
+    <div class="buttons">
+      <button onclick="alert('Settings Clicked')">Settings</button>
+      <button onclick="toggleForm()">Add Product</button>
+    </div>
+
+    <section class="product-cards">
+      <div class="card">
+        <span class="label">New Arrival</span>
+        <div class="image-placeholder"></div>
+        <p>Onderdil</p>
+      </div>
+      <div class="card">
+        <span class="label">Limited Stock</span>
+        <div class="image-placeholder"></div>
+        <p>Lampu Senja</p>
+      </div>
+      <div class="card">
+        <span class="label">Bestseller</span>
+        <div class="image-placeholder"></div>
+        <p>Ban Motor</p>
+      </div>
+    </section>
+
+    <form id="productForm" class="hidden">
+      <input type="text" placeholder="Enter product name" id="productName" />
+      <input type="number" placeholder="Enter product price" id="productPrice" />
+      <button type="submit">Save Product</button>
+    </form>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
