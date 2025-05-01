@@ -1,11 +1,10 @@
-function register() {
-    const username = document.getElementById('username').value;
-    if (username.trim() === '') {
-        alert('Please enter a username to register.');
-    } else {
-        alert(`Registered successfully as ${username}!`);
-    }
-}
+function goToRegister() {
+    window.location.href = "../halaman_reg/index.html";
+  }
+  
+  function login() {
+    alert("Fitur login belum tersedia 😅");
+  }
 
 function login() {
     const username = document.getElementById('username').value;
