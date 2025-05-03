@@ -1,0 +1,66 @@
+.book-container {
+    padding: 2rem;
+  }
+  
+  .intro {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+  
+  .intro img {
+    max-width: 400px;
+    border-radius: 8px;
+  }
+  
+  .form-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .form-title {
+    text-align: left;
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 1rem;
+  }
+  
+  .appointment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    max-width: 800px;
+  }
+  
+  .appointment-form input {
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .service-type {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .service-type button {
+    padding: 0.5rem 1rem;
+    background: #eee;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .submit-btn {
+    padding: 0.75rem;
+    background: black;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
