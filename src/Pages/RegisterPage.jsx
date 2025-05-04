@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 const RegisterPage = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    username: '',
+    nama: '',
     email: '',
     password: ''
   });
@@ -18,6 +18,10 @@ const RegisterPage = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+
+    if (!formData.nama || !formData.email || !formData.password) {
+      return alert('Semua field wajib diisi!');
+    }
 
     try {
       const response = await fetch('http://localhost:5000/api/register', {
@@ -48,9 +52,9 @@ const RegisterPage = () => {
         <form className="register-form" onSubmit={handleRegister}>
           <input
             type="text"
-            name="username"
-            placeholder="Enter your username"
-            value={formData.username}
+            name="nama"
+            placeholder="Enter your name"
+            value={formData.nama}
             onChange={handleChange}
           />
           <input
