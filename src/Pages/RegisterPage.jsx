@@ -11,7 +11,7 @@ const RegisterPage = () => {
     email: '',
     password: ''
   });
-  
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -44,13 +44,41 @@ const RegisterPage = () => {
       <main className="register-main">
         <h2>Register</h2>
         <p>Enter your credentials to access your account</p>
-        
+
         <form className="register-form" onSubmit={handleRegister}>
-          <input type="text" name="username" placeholder="Enter your username" value={formData.username} onChange={handleChange} />
-          <input type="email" name="email" placeholder="Enter your Email" value={formData.email} onChange={handleChange} />
-          <input type="password" name="password" placeholder="Enter your password" value={formData.password} onChange={handleChange} />
+          <input
+            type="text"
+            name="username"
+            placeholder="Enter your username"
+            value={formData.username}
+            onChange={handleChange}
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="Enter your Email"
+            value={formData.email}
+            onChange={handleChange}
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Enter your password"
+            value={formData.password}
+            onChange={handleChange}
+          />
           <button type="submit">Register</button>
         </form>
+
+        <p className="login-redirect">
+          Sudah punya akun?{' '}
+          <strong
+            onClick={() => navigate('/login')}
+            style={{ cursor: 'pointer' }}
+          >
+            Login
+          </strong>
+        </p>
       </main>
       <Footer />
     </div>
