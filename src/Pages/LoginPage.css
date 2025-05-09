@@ -9,11 +9,13 @@
   
   .login-main {
     text-align: center;
+    font-family: 'roboto', sans-serif;
     padding: 2rem;
   }
   
   .login-main h2 {
     font-size: 2rem;
+    font-family: 'roboto', sans-serif;
     margin-bottom: 1rem;
   }
   
@@ -21,6 +23,7 @@
     color: #555;
     margin-bottom: 1.5rem;
     line-height: 1.5;
+    font-family: 'roboto', sans-serif;
   }
   
   .login-form {

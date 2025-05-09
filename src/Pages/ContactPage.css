@@ -1,4 +1,132 @@
+/*New CSS*/
 .contact-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: "Roboto", sans-serif;
+}
+
+.contact-header {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  gap: 3rem;
+  padding: 2rem 1rem;
+  border-bottom: 2px solid #eee;
+  flex-wrap: wrap;
+  
+}
+
+.company-logo {
+  width: 80px;
+  height: auto;
+  margin-left: 300px;
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+.company-info h3 {
+  font-size: 1.25rem;
+  margin: 5px 0;
+}
+
+.company-type {
+  font-size: 0.875rem;
+  color: gray;
+  display: block;
+  margin: 0.5rem 0;
+}
+
+.company-info p {
+  font-size: 0.95rem;
+  margin-top: 0.7rem;
+  color: #333;
+}
+
+.contact-avatar {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.personal-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.contact-name {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-top: 10px;
+  color: #222;
+}
+
+.contact-role {
+  font-size: 1rem;
+  color: gray;
+  margin-top: 1px;
+}
+
+.contact-main {
+  text-align: center;
+  border-bottom: #eee 2px solid;
+  padding: 3rem 1rem;
+}
+
+.contact-main h2 {
+  font-size: 2rem;
+  margin-bottom: 3rem;
+  text-align: center;
+  font-weight: bold;
+}
+
+.contact-icons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  margin-right: 50px;
+}
+
+.icon-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 250px;
+  text-align: center;
+  margin-top: 5px;
+}
+
+.icon-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #f1f1f1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.icon-circle img {
+  width: 45px;
+  height: 45px;
+}
+
+.icon-wrapper p {
+  font-size: 1rem;
+  color: #333;
+}
+
+
+/*Default CSS*/
+/* .contact-page {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -27,5 +155,5 @@
     font-size: 1rem;
     margin: 0.5rem 0;
     color: #333;
-  }
+   */
   
