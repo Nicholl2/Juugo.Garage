@@ -31,6 +31,42 @@
     padding: 0;
   }
   
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+    cursor: pointer;
+  }
+  
+  .dropdown-menu {
+    position: absolute;
+    top: 50px;
+    left: 0;
+    background-color: white;
+    border: 1px solid #b8b8b8;
+    z-index: 999;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    padding: 0.5rem 0;
+    width: 360px;
+  }
+  
+  .dropdown-menu button {
+    background: none;
+    border: none;
+    padding: 12px 18px;
+    width: 100%;
+    text-align: left;
+    font-size: 1.5rem;
+    font-family: 'Arial', sans-serif;
+    cursor: pointer;
+  }
+  
+  .dropdown-menu button:hover {
+    background-color: #d8d6d6;
+  }
+  
   .nav-links li a {
     color: white;
     text-decoration: none;
