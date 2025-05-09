@@ -10,6 +10,7 @@ import ProductPage from './Pages/ProductPage';
 import ContactPage from './Pages/ContactPage';
 
 
+
 function App() {
   return (
     <Router>
@@ -22,7 +23,7 @@ function App() {
         <Route path="/products" element={<ProductPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/landing" element={<LandingPage />} />
-
+        
 
       </Routes>
     </Router>

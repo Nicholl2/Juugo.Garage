@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useEffect } from 'react';
 import Navbar from '../components/Navbar/Navbar';
 import HeroSection from '../components/HeroSection/HeroSection';
 import MechanicCard from '../components/MechanicCard/MechanicCard';
@@ -9,6 +10,9 @@ import { useNavigate } from 'react-router-dom';
 
 
 const LandingPage = () => {
+  useEffect(() => {
+    document.title = 'Home | Juugo.Garage';
+  }, []);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 

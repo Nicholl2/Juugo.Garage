@@ -1,4 +1,75 @@
 .services {
+  padding: 4rem 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  border-color: #d7bf76;
+  text-justify: auto;
+}
+
+.services h2 {
+  text-align: center;
+  font-size: 3.0rem;
+  font-weight: bold;
+  font-family: "Roboto", sans-serif;
+  margin-bottom: 3rem;
+}
+
+.service {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: "Roboto", sans-serif;
+  gap: 2rem;
+  margin-bottom: 4rem;
+}
+
+/* Alternate layout (zig-zag) untuk genap */
+.service:nth-child(even) {
+  flex-direction: row-reverse;
+}
+
+.text {
+  flex: 1;
+}
+
+.text h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  font-family: "Roboto", sans-serif;
+  text-align: justify;
+  margin-bottom: 0.75rem;
+}
+
+.text p {
+  font-size: 1rem;
+  color: #555;
+  font-family: "Roboto", sans-serif;
+  text-align: justify;
+  line-height: 1.6;
+}
+
+/* Responsive untuk layar kecil */
+@media (max-width: 768px) {
+  .service {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .service:nth-child(even) {
+    flex-direction: column;
+  }
+
+  .text {
+    margin-bottom: 1.5rem;
+  }
+
+  .service img {
+    max-width: 100%;
+  }
+}
+
+
+/* .services {
     padding: 4rem 2rem;
     background-color: #fff;
   }
@@ -43,4 +114,4 @@
       flex-direction: column !important;
     }
   }
-  
+   */

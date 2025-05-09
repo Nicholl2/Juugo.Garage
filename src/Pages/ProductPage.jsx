@@ -1,12 +1,17 @@
 import React from 'react';
+import { useEffect } from 'react';
 import './ProductPage.css';
 import Navbar from '../components/Navbar/Navbar';
 import Footer from '../components/Footer/Footer';
 import logo from '../assets/logo.png'; // sesuaikan path jika perlu
 
 const ProductPage = () => {
+  useEffect(() => {
+    document.title = 'Products | Juugo Garage';
+  }, []);
   // Data produk kosong sementara
   const products = [];
+
 
   return (
     <div className="product-page">

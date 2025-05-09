@@ -1,4 +1,99 @@
 .hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4rem 6rem;
+  flex-wrap: wrap;
+  drop-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.hero-left {
+  max-width: 3000px;
+  flex: 1;
+}
+
+.hero-left h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  margin-left: 50px;
+  font-family: 'roboto', sans-serif;
+  font-weight: bold;
+}
+
+.hero-left p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  margin-left: 50px;
+  font-family: 'roboto', sans-serif;
+  color: #444;
+}
+
+.hero-left button {
+  padding: 0.75rem 1.5rem;
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: 'roboto', sans-serif;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  width: 250px;
+  margin-left: 50px;
+  margin-bottom: 55px;
+}
+
+.hero-left button:hover {
+  transform: scale(1.05);
+}
+
+.hero-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-left: 500px;
+  flex: 1;
+}
+
+.hero-right img {
+  width: 100px;
+  margin-top: 55px;
+  margin-bottom: 50px;
+}
+
+.hero-right h3 {
+  font-size: 1rem;
+  letter-spacing: 1px;
+}
+
+.logo-with-text {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo-with-text img {
+  width: 300px;
+  height: 300px;
+}
+
+.logo-text h2 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.logo-text h3 {
+  font-size: 1.5rem;
+  margin: 0;
+  letter-spacing: 1px;
+  color: #555;
+}
+
+
+/* .hero {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -49,4 +144,4 @@
     font-size: 1rem;
     letter-spacing: 1px;
   }
-  
+   */

@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
+import { useEffect } from 'react';
 import './RegisterPage.css';
 import Navbar from '../components/Navbar/Navbar';
 import Footer from '../components/Footer/Footer';
 import { useNavigate } from 'react-router-dom';
 
 const RegisterPage = () => {
+  useEffect(() => {
+    document.title = 'Register | Juugo.Garage';
+  }, []);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     nama: '',

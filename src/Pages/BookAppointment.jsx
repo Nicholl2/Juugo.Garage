@@ -1,4 +1,5 @@
 import React from 'react';
+import { useEffect } from 'react';
 import './BookAppointment.css';
 import BookApp from '../assets/BookApp.png';
 import Footer from '../components/Footer/Footer';
@@ -6,6 +7,9 @@ import Navbar from '../components/Navbar/Navbar';
 
 
 const BookAppointment = () => {
+  useEffect(() => {
+    document.title = 'Juugo Garage | Book Appointment';
+  }, []);
   return (
     <div className="book-container">
         <Navbar/>

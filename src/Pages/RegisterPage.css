@@ -3,7 +3,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    font-family: sans-serif;
+    font-family: "Roboto", sans-serif;
   }
   
   .register-main {
@@ -35,6 +35,7 @@
     padding: 0.75rem;
     width: 100%;
     border: 1px solid #ccc;
+    font-family: "roboto", sans-serif;
     border-radius: 5px;
   }
   
@@ -45,6 +46,7 @@
     color: white;
     border: none;
     border-radius: 5px;
+    font-family: "roboto", sans-serif;
     cursor: pointer;
   }
   
