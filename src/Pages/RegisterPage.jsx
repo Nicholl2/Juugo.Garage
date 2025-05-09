@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 const RegisterPage = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    nama: '',
+    username: '',
     email: '',
     password: ''
   });
@@ -18,18 +18,19 @@ const RegisterPage = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-
-    if (!formData.nama || !formData.email || !formData.password) {
-      return alert('Semua field wajib diisi!');
-    }
-
+  
     try {
+      console.log('Mengirim data:', formData); 
+  
       const response = await fetch('http://localhost:5000/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
-
+  
+      const result = await response.json();
+      console.log('Respon dari server:', result); 
+  
       if (response.ok) {
         alert('Registrasi berhasil!');
         navigate('/login');
@@ -41,6 +42,7 @@ const RegisterPage = () => {
       alert('Terjadi kesalahan.');
     }
   };
+  
 
   return (
     <div className="register-container">
@@ -52,9 +54,9 @@ const RegisterPage = () => {
         <form className="register-form" onSubmit={handleRegister}>
           <input
             type="text"
-            name="nama"
-            placeholder="Enter your name"
-            value={formData.nama}
+            name="username"
+            placeholder="Enter your username"
+            value={formData.username}
             onChange={handleChange}
           />
           <input
