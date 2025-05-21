@@ -11,7 +11,7 @@ const RegisterPage = () => {
   }, []);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    nama: '',
+    username: '',
     email: '',
     password: ''
   });
@@ -23,7 +23,7 @@ const RegisterPage = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    if (!formData.nama || !formData.email || !formData.password) {
+    if (!formData.username || !formData.email || !formData.password) {
       return alert('Semua field wajib diisi!');
     }
 
@@ -56,9 +56,9 @@ const RegisterPage = () => {
         <form className="register-form" onSubmit={handleRegister}>
           <input
             type="text"
-            name="nama"
-            placeholder="Enter your name"
-            value={formData.nama}
+            name="username"
+            placeholder="Enter your username"
+            value={formData.username}
             onChange={handleChange}
           />
           <input

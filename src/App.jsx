@@ -8,6 +8,9 @@ import LoginPage from './Pages/LoginPage';
 import RegisterPage from './Pages/RegisterPage';
 import ProductPage from './Pages/ProductPage';
 import ContactPage from './Pages/ContactPage';
+import Settings from './Pages/Settings';
+import Dashboard from './Pages/Dashboard';
+import HistoryPage from './Pages/HistoryPage'; 
 
 
 
@@ -23,7 +26,9 @@ function App() {
         <Route path="/products" element={<ProductPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/landing" element={<LandingPage />} />
-        
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/history" element={<HistoryPage />} />
 
       </Routes>
     </Router>
