@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const bcrypt = require('bcrypt');
 const cors = require('cors');
@@ -11,7 +12,7 @@ const PORT = 5000;
 app.use(cors());
 app.use(express.json());
 
-// REGISTER
+// REGISTERy
 app.post('/api/register', async (req, res) => {
   const { nama, email, password } = req.body;
 
