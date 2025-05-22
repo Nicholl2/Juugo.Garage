@@ -124,7 +124,74 @@ app.post('/api/orders', async (req, res) => {
     });
   }
 });
+// Endpoint untuk membuat booking
+app.post('/api/bookings', async (req, res) => {
+  try {
+    const { id_users, id_services, full_name, phone, email, licence, service_date, deskripsi } = req.body;
 
+    // 1. Simpan ke tabel orders
+    const [orderResult] = await pool.query(
+      `INSERT INTO orders 
+       (id_users, id_services, full_name, phone, email, licence, order_date) 
+       VALUES (?, ?, ?, ?, ?, ?, NOW())`,
+      [id_users, id_services, full_name, phone, email, licence]
+    );
+
+    // 2. Simpan ke tabel riwayat
+    const [historyResult] = await pool.query(
+      `INSERT INTO riwayat 
+       (id_users, id_services, service_date, deskripsi) 
+       VALUES (?, ?, ?, ?)`,
+      [id_users, id_services, service_date, deskripsi]
+    );
+
+    // 3. Dapatkan detail lengkap untuk response
+    const [serviceData] = await pool.query(
+      `SELECT nama_layanan, harga FROM services WHERE id_services = ?`,
+      [id_services]
+    );
+
+    res.json({
+      success: true,
+      orderId: orderResult.insertId,
+      historyId: historyResult.insertId,
+      service: serviceData[0],
+      message: 'Booking berhasil dibuat'
+    });
+
+  } catch (err) {
+    console.error('Booking error:', err);
+    res.status(500).json({ 
+      success: false,
+      message: 'Gagal membuat booking' 
+    });
+  }
+});
+app.get('/api/history', (req, res) => {
+  // Contoh data - sesuaikan dengan database Anda
+  const historyData = [
+    {
+      service: "Ganti Oli Mesin",
+      date: "15 Mei 2023",
+      price: "150.000",
+      status: "Completed"
+    },
+    {
+      service: "Full Service",
+      date: "28 April 2023",
+      price: "1.000.000",
+      status: "Completed"
+    },
+    {
+      service: "Sparepart Change",
+      date: "10 Maret 2023",
+      price: "450.000",
+      status: "Completed"
+    }
+  ];
+  
+  res.json(historyData);
+});
 // Login Endpoint (Fixed)
 app.post('/api/login', async (req, res) => {
   try {

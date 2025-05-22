@@ -10,7 +10,8 @@ import ProductPage from './Pages/ProductPage';
 import ContactPage from './Pages/ContactPage';
 import Settings from './Pages/Settings';
 import Dashboard from './Pages/Dashboard';
-import HistoryPage from './Pages/HistoryPage'; 
+import HistoryPage from './Pages/HistoryPage';
+
 
 
 
@@ -29,7 +30,7 @@ function App() {
         <Route path="/settings" element={<Settings />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/history" element={<HistoryPage />} />
-
+        
       </Routes>
     </Router>
   );

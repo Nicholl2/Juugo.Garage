@@ -60,45 +60,97 @@ const BookAppointment = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
+  e.preventDefault();
+  setError('');
 
-    // Validasi form
-    if (!formData.full_name || !formData.phone || !formData.licence || !formData.serviceType) {
-      setError('Harap isi semua field dan pilih jenis servis');
-      return;
+  if (!formData.full_name || !formData.phone || !formData.licence || !formData.serviceType) {
+    setError('Harap isi semua field');
+    return;
+  }
+
+  try {
+    const selectedService = services.find(s => s.id_services === formData.serviceType);
+    if (!selectedService) {
+      throw new Error('Service tidak valid');
     }
 
-    try {
-      const response = await fetch('http://localhost:5000/api/orders', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          id_users: userData.id_users,
-          id_services: formData.serviceType,
-          full_name: formData.full_name,
-          phone: formData.phone,
-          email: userData.email, // Email diambil dari data user
-          licence: formData.licence
-        })
-      });
+    // Format tanggal (misal: 3 hari dari sekarang)
+    const serviceDate = new Date();
+    serviceDate.setDate(serviceDate.getDate() + 3);
+    const formattedDate = serviceDate.toISOString().split('T')[0];
 
-      const data = await response.json();
+    const response = await fetch('http://localhost:5000/api/bookings', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify({
+        id_users: userData.id_users,
+        id_services: formData.serviceType,
+        full_name: formData.full_name,
+        phone: formData.phone,
+        email: userData.email,
+        licence: formData.licence,
+        service_date: formattedDate,
+        deskripsi: `Booking ${selectedService.nama_layanan}`
+      })
+    });
 
-      if (!response.ok) {
-        throw new Error(data.message || 'Gagal membuat appointment');
-      }
+    const data = await response.json();
 
-      alert('Appointment berhasil dibuat!');
-      navigate('/'); // Redirect ke halaman utama
-
-    } catch (err) {
-      console.error('Error:', err);
-      setError(err.message || 'Terjadi kesalahan saat membuat appointment');
+    if (!data.success) {
+      throw new Error(data.message || 'Gagal membuat booking');
     }
-  };
+
+    alert(`Booking berhasil! Order ID: ${data.data.order.insertId}`);
+    navigate('/history');
+    
+  } catch (err) {
+    console.error('Booking error:', err);
+    setError(err.message || 'Gagal membuat booking');
+  }
+};
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setError('');
+
+  //   // Validasi form
+  //   if (!formData.full_name || !formData.phone || !formData.licence || !formData.serviceType) {
+  //     setError('Harap isi semua field dan pilih jenis servis');
+  //     return;
+  //   }
+
+  //   try {
+  //     const response = await fetch('http://localhost:5000/api/orders', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({
+  //         id_users: userData.id_users,
+  //         id_services: formData.serviceType,
+  //         full_name: formData.full_name,
+  //         phone: formData.phone,
+  //         email: userData.email, // Email diambil dari data user
+  //         licence: formData.licence
+  //       })
+  //     });
+
+  //     const data = await response.json();
+
+  //     if (!response.ok) {
+  //       throw new Error(data.message || 'Gagal membuat appointment');
+  //     }
+
+  //     alert('Appointment berhasil dibuat!');
+  //     navigate('/'); // Redirect ke halaman utama
+
+  //   } catch (err) {
+  //     console.error('Error:', err);
+  //     setError(err.message || 'Terjadi kesalahan saat membuat appointment');
+  //   }
+  // };
 
   return (
     <div className="book-container">

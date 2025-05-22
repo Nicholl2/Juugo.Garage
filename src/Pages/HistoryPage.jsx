@@ -1,152 +1,129 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './HistoryPage.css';
+import Navbar from '../components/Navbar/Navbar';
 
 const HistoryPage = () => {
-  const [selectedOrder, setSelectedOrder] = useState(null);
   const navigate = useNavigate();
+  const [orders, setOrders] = useState([]);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Sample data - replace with your actual data from API
-  const historyData = [
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('http://localhost:5000/api/history', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setOrders(data);
+        }
+      } catch (error) {
+        console.error('Error fetching orders:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
+  const sampleOrders = [
     {
-      id_riwayat: 1,
-      id_users: 306,
-      id_services: 1,
-      service_date: '2025-02-28',
-      deskripsi: 'Oil Change, Full Service',
+      id: 1234,
+      date: '05/01/2025',
       status: 'Done',
-      details: [
-        { name: 'Oil Change', price: 45000 },
+      items: [
+        { name: 'Oil Changes', price: 45000 },
         { name: 'MotoX Oil', price: 80000 }
       ]
-    },
-    // Add more history items as needed
+    }
   ];
 
-  // Group by month
-  const groupedHistory = historyData.reduce((acc, item) => {
-    const date = new Date(item.service_date);
-    const monthYear = date.toLocaleString('default', { month: 'long', year: 'numeric' });
-    
-    if (!acc[monthYear]) {
-      acc[monthYear] = [];
-    }
-    acc[monthYear].push(item);
-    return acc;
-  }, {});
+  const calculateTotal = items => items.reduce((sum, item) => sum + item.price, 0);
 
-  const handleOrderClick = (order) => {
-    setSelectedOrder(order);
-  };
-
-  const handleBackClick = () => {
-    setSelectedOrder(null);
-  };
+  if (loading) return <div className="loading">Loading history...</div>;
 
   return (
     <div className="history-page">
-      <nav className="history-nav">
-        <div className="user-info">User 306</div>
-        <div className="nav-links">
-          <button onClick={() => navigate('/')}>Home</button>
-          <button className="active">History</button>
-          <button onClick={() => navigate('/services')}>Services</button>
-          <button onClick={() => navigate('/products')}>Products</button>
-          <button onClick={() => navigate('/contact')}>Contact</button>
-        </div>
-      </nav>
-
+      <Navbar />
+      
       <div className="history-container">
-        <h1>History</h1>
-        <p className="subtitle">{selectedOrder ? 'Order Details' : 'Track your services'}</p>
+        <div className="history-header" style={{ textAlign: 'center' }}>
+          <h1>Service History</h1>
+          <p>Track your completed services</p>
+          <button 
+            className="create-order-btn"
+            onClick={() => navigate('/services')}
+          >
+            Create New Order
+          </button>
+        </div>
 
-        {!selectedOrder ? (
-          <>
-            <button className="create-order-btn" onClick={() => navigate('/services')}>
-              Create New Order
-            </button>
-
-            <div className="current-status">
-              <h2>This Month</h2>
-              <div className="order-card">
-                <div className="order-header">
-                  <span>Order #1234</span>
-                  <span className="status in-progress">In Progress</span>
-                </div>
-                <div className="order-date">Today</div>
-              </div>
-            </div>
-
-            {Object.entries(groupedHistory).map(([monthYear, orders]) => (
-              <div key={monthYear} className="month-section">
-                <h2>{monthYear}</h2>
-                {orders.map((order) => (
-                  <div 
-                    key={order.id_riwayat} 
-                    className="order-card"
-                    onClick={() => handleOrderClick(order)}
-                  >
-                    <div className="order-header">
-                      <span>Order #{order.id_riwayat}</span>
-                      <span className={`status ${order.status.toLowerCase().replace(' ', '-')}`}>
-                        {order.status}
-                      </span>
-                    </div>
-                    <div className="order-date">
-                      {new Date(order.service_date).toLocaleDateString('en-GB')}
-                    </div>
-                  </div>
-                ))}
-                <div className="month-dates">
-                  {/* Display unique dates for the month */}
-                  {[
-                    ...new Set(
-                      orders.map(o =>
-                        new Date(o.service_date).toLocaleDateString('en-GB')
-                      )
-                    )
-                  ].join('  ')}
-                </div>
-              </div>
-            ))}
-          </>
-        ) : (
-          <div className="order-details">
-            <button className="back-button" onClick={handleBackClick}>
-              ← Back to History
+        {selectedOrder ? (
+          <div className="order-detail-view">
+            <button 
+              className="back-button"
+              onClick={() => setSelectedOrder(null)}
+            >
+              ← Back to List
             </button>
             
-            <div className="detail-card">
-              <div className="detail-header">
-                <span>Order #{selectedOrder.id_riwayat}</span>
-                <span className={`status ${selectedOrder.status.toLowerCase().replace(' ', '-')}`}>
+            <div className="history-card">
+              <div className="service-meta">
+                <span className="order-id">Order #{selectedOrder.id}</span>
+                <span className={`status ${selectedOrder.status.toLowerCase()}`}>
                   {selectedOrder.status}
                 </span>
               </div>
-              <div className="detail-date">
-                {new Date(selectedOrder.service_date).toLocaleDateString('en-GB')}
-              </div>
+              <div className="service-date">{selectedOrder.date}</div>
               
-              <div className="service-list">
-                {selectedOrder.details.map((service, index) => (
-                  <div key={index} className="service-item">
-                    <span>* {service.name}</span>
-                    <span>Rp {service.price.toLocaleString()}</span>
+              <div className="divider"></div>
+              
+              <div className="service-items">
+                {selectedOrder.items.map((item, index) => (
+                  <div key={index} className="service-meta">
+                    <span className="service-name">• {item.name}</span>
+                    <span className="price">Rp {item.price.toLocaleString('id-ID')}</span>
                   </div>
                 ))}
               </div>
               
-              <div className="total-price">
+              <div className="divider"></div>
+              
+              <div className="service-meta total-line">
                 <span>Total</span>
-                <span>Rp {selectedOrder.details.reduce((sum, item) => sum + item.price, 0).toLocaleString()}</span>
+                <span className="price">Rp {calculateTotal(selectedOrder.items).toLocaleString('id-ID')}</span>
               </div>
             </div>
+          </div>
+        ) : (
+          <div className="history-list">
+            {sampleOrders.map(order => (
+              <div 
+                key={order.id} 
+                className="history-card"
+                onClick={() => setSelectedOrder(order)}
+              >
+                <div className="service-info">
+                  <h3>Order #{order.id}</h3>
+                  <div className="service-meta">
+                    <span className="service-date">{order.date}</span>
+                    <span className={`status ${order.status.toLowerCase()}`}>
+                      {order.status}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>
 
       <footer className="history-footer">
-        © 2025 Juugo Garage. All Rights Reserved
+        © 2025 Juugo.Garage. All Rights Reserved
       </footer>
     </div>
   );
