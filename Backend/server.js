@@ -126,41 +126,87 @@ app.post('/api/orders', async (req, res) => {
 });
 // Endpoint untuk membuat booking
 app.post('/api/bookings', async (req, res) => {
+  let conn;
   try {
-  const [orderResult, orderFields] = await pool.query(
-    `INSERT INTO orders 
-     (id_users, id_services, full_name, phone, email, licence, order_date) 
-     VALUES (?, ?, ?, ?, ?, ?, NOW())`,
-    [id_users, id_services, full_name, phone, email, licence]
-  );
+    // 1. Ambil data dari request body
+    const { 
+      id_users, 
+      id_services, 
+      full_name, 
+      phone, 
+      email, 
+      licence, 
+      service_date, 
+      deskripsi 
+    } = req.body;
 
-  const [historyResult, historyFields] = await pool.query(
-    `INSERT INTO riwayat 
-     (id_users, id_services, service_date, deskripsi) 
-     VALUES (?, ?, ?, ?)`,
-    [id_users, id_services, service_date, deskripsi]
-  );
+    console.log('Booking request data:', req.body); // Log data request
 
-  const [serviceData] = await pool.query(
-    `SELECT nama_layanan, harga FROM services WHERE id_services = ?`,
-    [id_services]
-  );
+    // 2. Validasi input
+    if (!id_users || !id_services || !full_name || !phone || !email || !licence || !service_date) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Semua field wajib diisi',
+        required_fields: ['id_users', 'id_services', 'full_name', 'phone', 'email', 'licence', 'service_date']
+      });
+    }
 
-  res.json({
-    success: true,
-    orderId: orderResult.insertId,
-    historyId: historyResult.insertId,
-    service: serviceData[0],
-    message: 'Booking berhasil dibuat'
-  });
+    // 3. Mulai transaction
+    conn = await pool.getConnection();
+    await conn.beginTransaction();
 
-} catch (err) {
-  console.error('Booking error:', err);
-  res.status(500).json({ 
-    success: false,
-    message: 'Gagal membuat booking' 
-  });
-}
+    try {
+      // 4. Insert ke tabel orders
+      const [orderResult] = await conn.query(
+        `INSERT INTO orders 
+         (id_users, id_services, full_name, phone, email, licence, order_date) 
+         VALUES (?, ?, ?, ?, ?, ?, NOW())`,
+        [id_users, id_services, full_name, phone, email, licence]
+      );
+
+      // 5. Insert ke tabel riwayat
+      const [historyResult] = await conn.query(
+        `INSERT INTO riwayat 
+         (id_users, id_services, service_date, deskripsi) 
+         VALUES (?, ?, ?, ?)`,
+        [id_users, id_services, service_date, deskripsi || `Service untuk ${full_name}`]
+      );
+
+      // 6. Ambil detail service
+      const [serviceData] = await conn.query(
+        `SELECT nama_layanan, harga FROM services WHERE id_services = ?`,
+        [id_services]
+      );
+
+      // 7. Commit transaction jika semua berhasil
+      await conn.commit();
+
+      // 8. Kirim response sukses
+      res.json({
+        success: true,
+        orderId: orderResult.insertId,
+        historyId: historyResult.insertId,
+        service: serviceData[0],
+        message: 'Booking berhasil dibuat'
+      });
+
+    } catch (err) {
+      // Rollback transaction jika ada error
+      await conn.rollback();
+      console.error('Transaction error:', err);
+      throw err;
+    }
+  } catch (err) {
+    console.error('Booking failed:', err);
+    res.status(500).json({ 
+      success: false,
+      message: 'Gagal membuat booking',
+      error: err.message // Tambahkan detail error
+    });
+  } finally {
+    // Release connection
+    if (conn) conn.release();
+  }
 });
 // Login Endpoint (Fixed)
 app.post('/api/login', async (req, res) => {
