@@ -3,25 +3,35 @@ import { useParams } from 'react-router-dom';
 import Navbar from '../components/Navbar/Navbar';
 import Footer from '../components/Footer/Footer';
 import './ProductDetail.css';
-
-// Assets
 import Motoroil from '../assets/MotorXoil.png';
-import aeroshield from '../assets/AeroShield.png';
-import lampu from '../assets/LumoBright.png';
-import bantubles from '../assets/banTubbles.png';
-import airradiator from '../assets/airradiator.jpg';
-import rantai from '../assets/rantaimotor.jpg';
-import akimotor from '../assets/aki.jpg';
-import shockbreker from '../assets/ohlins shock.jpg';
-import gspontan from '../assets/gasspontan.jpg';
+import AeroShield from '../assets/AeroShield.png';
+import LumoBright from '../assets/LumoBright.png';
+import BanTubbles from '../assets/banTubbles.png';
+import AirRadiator from '../assets/airradiator.jpg';
+import RantaiMotor from '../assets/rantaimotor.jpg';
+import GasSpontan from '../assets/gasspontan.jpg';
+import ShockBreker from '../assets/ohlins shock.jpg';
+import AkiMotor from '../assets/aki.jpg';
 
+//       price: 150000,
+// Product Data (consider moving to a separate file)
+const importImage = (imageName) => {
+  try {
+    return require(`../assets/${imageName}`).default;
+  } catch (err) {
+    console.error(`Gambar tidak ditemukan: ${imageName}`);
+    return require('../assets/rantaimotor.jpg').default; // Fallback image
+  }
+};
+
+// Import all images
 const productData = {
   'MotorX Oil': {
     name: "MotorX Oil",
     image: Motoroil,
     description: "Pelumas motor berkualitas tinggi.",
     price: 85000,
-    spesifikasi: [
+    specifications: [
       "Melindungi mesin dari gesekan berlebih.",
       "Cocok untuk motor matic dan bebek.",
       "Formulasi khusus perjalanan jauh."
@@ -29,60 +39,89 @@ const productData = {
   },
   'AeroShield': {
     name: "AeroShield",
-    image: aeroshield,
+    image: AeroShield,
     description: "Windshield mini untuk motor.",
     price: 125000,
-    spesifikasi: ["Bahan kuat", "Tahan panas", "Ringan dipasang"]
+    specifications: ["Bahan kuat", "Tahan panas", "Ringan dipasang"]
   },
   'LumoBright': {
     name: "LumoBright",
-    image: lampu,
+    image: LumoBright,
     description: "Lampu LED motor super terang.",
     price: 500000,
-    spesifikasi: ["LED 15 watt", "Anti air", "Daya tahan 2 tahun"]
+    specifications: [
+      "Daya tahan tinggi",
+      "Hemat energi",
+      "Mudah dipasang"
+    ]
   },
   'Ban Tubles': {
     name: "Ban Tubles",
-    image: bantubles,
+    image: BanTubbles,
     description: "Ban tubeless untuk motor harian.",
     price: 320000,
-    spesifikasi: ["Ukuran 70/90", "Grip kuat", "Tahan lama"]
+    specifications: [
+      "Tahan lama",
+      "Mudah dipasang",
+      "Desain sporty"
+    ]
   },
   'Air Radiator': {
     name: "Air Radiator",
-    image: airradiator,
+    image: AirRadiator,
     description: "Coolant radiator Shell 1L.",
     price: 89000,
-    spesifikasi: ["Isi 1 liter", "Melindungi dari karat", "Mendinginkan optimal"]
+    specifications: [
+      "Mencegah overheating",
+      "Meningkatkan performa mesin",
+      "Cocok untuk semua jenis motor"
+    ]
   },
   'Rantai UFC MMA': {
     name: "Rantai UFC MMA",
-    image: rantai,
+    image: RantaiMotor,
     description: "Rantai motor tahan lama.",
     price: 76000,
-    spesifikasi: ["Baja kualitas tinggi", "Anti karat"]
+    specifications: [
+      "Tahan lama",
+      "Mudah dipasang",
+      "Desain sporty"
+    ]
   },
   'Aki Vario Karbu': {
     name: "Aki Vario Karbu",
-    image: akimotor,
+    image: AkiMotor,
     description: "Aki Yuasa YTZ8V untuk Vario Karbu.",
     price: 121000,
-    spesifikasi: ["12V", "Maintenance free"]
+    specifications: [
+      "Daya tahan tinggi",
+      "Mudah dipasang",
+      "Desain sporty"
+    ]
   },
   'Sok Breker': {
     name: "Sok Breker",
-    image: shockbreker,
+    image: ShockBreker,
     description: "Shockbreaker KVB heavy duty.",
     price: 514000,
-    spesifikasi: ["Tahan banting", "Cocok touring"]
+    specifications: [
+      "Daya tahan tinggi",
+      "Mudah dipasang",
+      "Desain sporty"
+    ]
   },
   'Gas Spontan': {
     name: "Gas Spontan",
-    image: gspontan,
+    image: GasSpontan,
     description: "Gas spontan motor universal.",
     price: 120500,
-    spesifikasi: ["Akselerasi cepat", "Cocok semua motor"]
-  }
+    specifications: [
+      "Daya tahan tinggi",
+      "Mudah dipasang",
+      "Desain sporty"
+    ]
+  },
+  // ... (other products with their respective imported images)
 };
 
 const ProductDetail = () => {
@@ -91,32 +130,57 @@ const ProductDetail = () => {
 
   if (!product) {
     return (
-      <div className="product-detail-page">
+      <div className="product-detail">
         <Navbar />
-        <main className="product-not-found">Produk tidak ditemukan.</main>
+        <main className="product-detail__main">
+          <div className="product-not-found">Produk tidak ditemukan.</div>
+        </main>
         <Footer />
       </div>
     );
   }
 
   return (
-    <div className="product-detail-page">
+    <div className="product-detail">
       <Navbar />
-      <main className="product-detail-content">
-        <div className="product-detail-container">
-          <img src={product.image} alt={product.name} className="product-detail-image" />
-          <div className="product-detail-info">
-            <h2>{product.name}</h2>
-            <p>{product.description}</p>
-            <h3>Rp {product.price.toLocaleString()}</h3>
-            <ul>
-              {product.spesifikasi.map((item, index) => (
-                <li key={index}>✅ {item}</li>
-              ))}
-            </ul>
-            <div className="button-group">
-              <button className="buy-now-btn">Buy Now</button>
-              <button className="appointment-btn">Book Appointment</button>
+      <main className="product-detail__main">
+        <h2 className="product-detail__header">Product Details</h2>
+        <div className="product-detail__container">
+          <div className="product-detail__image-wrapper">
+            <div className="product-detail__image-container">
+              <img 
+                src={product.image} 
+                alt={product.name} 
+                className="product-detail__image"
+                onError={(e) => {
+                  e.target.src = AeroShield;
+                  e.target.className = "product-detail__image product-detail__image--error";
+                }}
+              />
+            </div>
+          </div>
+          
+          <div className="product-detail__info">
+            <h1 className="product-detail__title">{product.name}</h1>
+            <p className="product-detail__description">{product.description}</p>
+            <p className="product-detail__price">
+              Rp {product.price.toLocaleString('id-ID')}
+            </p>
+            
+            <div className="product-detail__specs">
+              <h2 className="specs-title">Spesifikasi:</h2>
+              <ul className="specs-list">
+                {product.specifications.map((item, index) => (
+                  <li key={index} className="specs-item">
+                    <span className="specs-icon">✓</span> {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            
+            <div className="product-detail__actions">
+              <button className="btn btn--primary">Beli Sekarang</button>
+              <button className="btn btn--secondary">Buat Janji</button>
             </div>
           </div>
         </div>
@@ -125,5 +189,6 @@ const ProductDetail = () => {
     </div>
   );
 };
+
 
 export default ProductDetail;

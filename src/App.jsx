@@ -10,6 +10,7 @@ import ContactPage from './Pages/ContactPage';
 import Settings from './Pages/Settings';
 import Dashboard from './Pages/Dashboard';
 import HistoryPage from './Pages/HistoryPage';
+import ProductDetail from './Pages/ProductDetail';
 
 
 
@@ -29,7 +30,9 @@ function App() {
         <Route path="/settings" element={<Settings />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/history" element={<HistoryPage />} />
-        
+        <Route path="/products/:id" element={<ProductDetail />} />
+        {/* Add more routes as needed */}
+
       </Routes>
     </Router>
   );
