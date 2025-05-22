@@ -8,6 +8,7 @@ import LoginPage from './Pages/LoginPage';
 import RegisterPage from './Pages/RegisterPage';
 import ProductPage from './Pages/ProductPage';
 import ContactPage from './Pages/ContactPage';
+import Settings from './Pages/Settings';
 
 
 
@@ -23,6 +24,7 @@ function App() {
         <Route path="/products" element={<ProductPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/landing" element={<LandingPage />} />
+        <Route path="/settings" element={<Settings />} />
         
 
       </Routes>
