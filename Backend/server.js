@@ -127,70 +127,40 @@ app.post('/api/orders', async (req, res) => {
 // Endpoint untuk membuat booking
 app.post('/api/bookings', async (req, res) => {
   try {
-    const { id_users, id_services, full_name, phone, email, licence, service_date, deskripsi } = req.body;
+  const [orderResult, orderFields] = await pool.query(
+    `INSERT INTO orders 
+     (id_users, id_services, full_name, phone, email, licence, order_date) 
+     VALUES (?, ?, ?, ?, ?, ?, NOW())`,
+    [id_users, id_services, full_name, phone, email, licence]
+  );
 
-    // 1. Simpan ke tabel orders
-    const [orderResult] = await pool.query(
-      `INSERT INTO orders 
-       (id_users, id_services, full_name, phone, email, licence, order_date) 
-       VALUES (?, ?, ?, ?, ?, ?, NOW())`,
-      [id_users, id_services, full_name, phone, email, licence]
-    );
+  const [historyResult, historyFields] = await pool.query(
+    `INSERT INTO riwayat 
+     (id_users, id_services, service_date, deskripsi) 
+     VALUES (?, ?, ?, ?)`,
+    [id_users, id_services, service_date, deskripsi]
+  );
 
-    // 2. Simpan ke tabel riwayat
-    const [historyResult] = await pool.query(
-      `INSERT INTO riwayat 
-       (id_users, id_services, service_date, deskripsi) 
-       VALUES (?, ?, ?, ?)`,
-      [id_users, id_services, service_date, deskripsi]
-    );
+  const [serviceData] = await pool.query(
+    `SELECT nama_layanan, harga FROM services WHERE id_services = ?`,
+    [id_services]
+  );
 
-    // 3. Dapatkan detail lengkap untuk response
-    const [serviceData] = await pool.query(
-      `SELECT nama_layanan, harga FROM services WHERE id_services = ?`,
-      [id_services]
-    );
+  res.json({
+    success: true,
+    orderId: orderResult.insertId,
+    historyId: historyResult.insertId,
+    service: serviceData[0],
+    message: 'Booking berhasil dibuat'
+  });
 
-    res.json({
-      success: true,
-      orderId: orderResult.insertId,
-      historyId: historyResult.insertId,
-      service: serviceData[0],
-      message: 'Booking berhasil dibuat'
-    });
-
-  } catch (err) {
-    console.error('Booking error:', err);
-    res.status(500).json({ 
-      success: false,
-      message: 'Gagal membuat booking' 
-    });
-  }
-});
-app.get('/api/history', (req, res) => {
-  // Contoh data - sesuaikan dengan database Anda
-  const historyData = [
-    {
-      service: "Ganti Oli Mesin",
-      date: "15 Mei 2023",
-      price: "150.000",
-      status: "Completed"
-    },
-    {
-      service: "Full Service",
-      date: "28 April 2023",
-      price: "1.000.000",
-      status: "Completed"
-    },
-    {
-      service: "Sparepart Change",
-      date: "10 Maret 2023",
-      price: "450.000",
-      status: "Completed"
-    }
-  ];
-  
-  res.json(historyData);
+} catch (err) {
+  console.error('Booking error:', err);
+  res.status(500).json({ 
+    success: false,
+    message: 'Gagal membuat booking' 
+  });
+}
 });
 // Login Endpoint (Fixed)
 app.post('/api/login', async (req, res) => {
@@ -294,99 +264,6 @@ app.put('/api/users/:id', async (req, res) => {
     res.status(500).json({ success: false, message: 'Terjadi kesalahan server' });
   }
 });
-
-
-// UPDATE USER YANG UDAH BISA
-// app.put('/api/users/:id', async (req, res) => {
-//   console.log('📩 Request update user diterima:', req.params.id, req.body);
-  
-//   try {
-//     const { id } = req.params;
-//     const { username, email, password } = req.body;
-
-//     // Validasi sederhana
-//     if (!username || !email) {
-//       console.log('⚠️ Validasi gagal: username atau email kosong');
-//       return res.status(400).json({ 
-//         success: false,
-//         message: 'Username dan email wajib diisi' 
-//       });
-//     }
-
-//     // Log data sebelum update
-//     const [currentUser] = await pool.query(
-//       'SELECT * FROM users WHERE id_users = ?', 
-//       [id]
-//     );
-//     console.log('👤 Data user saat ini:', currentUser[0]);
-
-//     // Update data
-//     const [result] = await pool.query(
-//       'UPDATE users SET username = ?, email = ? WHERE id_users = ?',
-//       [username, email, id]
-//     );
-
-//     console.log('🔧 Hasil update:', result);
-
-//     if (result.affectedRows === 0) {
-//       console.log('🔴 Tidak ada user yang diupdate');
-//       return res.status(404).json({ 
-//         success: false,
-//         message: 'User tidak ditemukan' 
-//       });
-//     }
-
-//     // Ambil data terbaru
-//     const [updatedUser] = await pool.query(
-//       'SELECT id_users, username, email FROM users WHERE id_users = ?',
-//       [id]
-//     );
-
-//     console.log('🔄 Data terupdate:', updatedUser[0]);
-
-//     res.json({
-//       success: true,
-//       user: updatedUser[0]
-//     });
-
-//   } catch (err) {
-//     console.error('🔥 Error update user:', err);
-//     res.status(500).json({
-//       success: false,
-//       message: 'Terjadi kesalahan server'
-//     });
-//   }
-// });
-// app.put('/api/users/:id', async (req, res) => {
-//   const { id } = req.params;
-//   const { username, email, password } = req.body;
-
-//   try {
-//     // Ambil user lama
-//     const [users] = await pool.query('SELECT * FROM users WHERE id_users = ?', [id]);
-//     if (users.length === 0) {
-//       return res.status(404).json({ message: 'User not found' });
-//     }
-
-//     const user = users[0];
-
-//     const newUsername = username || user.username;
-//     const newEmail = email || user.email;
-//     const newPassword = password || user.password; // Belum di-hash
-
-//     await pool.query(
-//       'UPDATE users SET username = ?, email = ?, password = ? WHERE id_users = ?',
-//       [newUsername, newEmail, newPassword, id]
-//     );
-
-//     const [updatedUsers] = await pool.query('SELECT * FROM users WHERE id_users = ?', [id]);
-
-//     res.status(200).json(updatedUsers[0]);
-//   } catch (err) {
-//     console.error('Update user error:', err);
-//     res.status(500).json({ error: 'Internal server error' });
-//   }
-// });
 
 // DELETE USER
 app.delete('/api/users/:id', async (req, res) => {
