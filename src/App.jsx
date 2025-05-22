@@ -8,6 +8,7 @@ import RegisterPage from './Pages/RegisterPage';
 import ProductPage from './Pages/ProductPage';
 import ContactPage from './Pages/ContactPage';
 import Settings from './Pages/Settings';
+import ProductDetail from './Pages/ProductDetail';
 
 
 
@@ -24,6 +25,8 @@ function App() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/landing" element={<LandingPage />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/products/:id" element={<ProductDetail />} />
+
         
 
       </Routes>
