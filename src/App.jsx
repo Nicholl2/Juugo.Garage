@@ -1,32 +1,13 @@
-// src/App.jsx
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import LandingPage from './Pages/LandingPage';
-import ServicePage from './Pages/ServicePage';
-import BookAppointment from './Pages/BookAppointment';
-import LoginPage from './Pages/LoginPage';
-import RegisterPage from './Pages/RegisterPage';
-import ProductPage from './Pages/ProductPage';
-import ContactPage from './Pages/ContactPage';
+import React from 'react'
 
-
-function App() {
+const App = () => {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/services" element={<ServicePage />} />
-        <Route path="/book" element={<BookAppointment />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/products" element={<ProductPage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/landing" element={<LandingPage />} />
-
-
-      </Routes>
-    </Router>
-  );
+    <div>
+      <h1 class="text-3xl font-bold underline">
+        Hello world!
+      </h1>
+    </div>
+  )
 }
 
-export default App;
+export default App
