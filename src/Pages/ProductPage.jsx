@@ -1,18 +1,22 @@
 import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import './ProductPage.css';
+
 import Navbar from '../components/Navbar/Navbar';
 import Footer from '../components/Footer/Footer';
-import Motoroil from '../assets/MotorXoil.png';
-import aeroshield from'../assets/AeroShield.png';
-import bantubles from'../assets/banTubbles.png';
-import lampu from'../assets/LumoBright.png';
-import rantai from'../assets/rantaimotor.jpg';
-import gspontan from'../assets/gasspontan.jpg';
-import airradiator from'../assets/airradiator.jpg';
-import shockbreker from'../assets/ohlins shock.jpg';
-import akimotor from'../assets/aki.jpg';
 
-import logo from '../assets/logo.png'; // sesuaikan path jika perlu
+import Motoroil from '../assets/MotorXoil.png';
+import aeroshield from '../assets/AeroShield.png';
+import bantubles from '../assets/banTubbles.png';
+import lampu from '../assets/LumoBright.png';
+import rantai from '../assets/rantaimotor.jpg';
+import gspontan from '../assets/gasspontan.jpg';
+import airradiator from '../assets/airradiator.jpg';
+import shockbreker from '../assets/ohlins shock.jpg';
+import akimotor from '../assets/aki.jpg';
+import logo from '../assets/logo.png';
+
+
 
 const ProductPage = () => {
   useEffect(() => {
@@ -90,12 +94,17 @@ const ProductPage = () => {
 
         <div className="product-grid">
           {products.map((product, index) => (
-            <div className="product-card" key={index}>
+            <Link
+              to={`/products/${encodeURIComponent(product.name)}`}
+              state={{ product }}
+              className="product-card"
+              key={index}
+            >
               <img src={product.image} alt={product.name} />
               <h4>{product.name}</h4>
               <p>{product.description}</p>
               <p><strong>Rp {product.price.toLocaleString()}</strong></p>
-            </div>
+            </Link>
           ))}
         </div>
       </main>
