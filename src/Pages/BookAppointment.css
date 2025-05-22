@@ -140,7 +140,93 @@
   }
 }
 
+/* BookAppointment.css */
+.service-type {
+  display: flex;
+  gap: 10px;
+  margin: 15px 0;
+}
 
+.service-type button {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  background: #f5f5f5;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+
+.service-type button.active {
+  background: #d39936;
+  color: white;
+  border-color: #d39936;
+}
+
+.error-message {
+  color: #e53e3e;
+  background: #fff5f5;
+  padding: 5px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+/* Style untuk form */
+.appointment-form input[disabled] {
+  background-color: #f0f0f0;
+  color: #666;
+}
+
+/* Style untuk service options */
+.service-selection {
+  margin: 20px 0;
+}
+
+.service-options {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.service-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  cursor: pointer;
+  transition: all 0.3s;
+  flex: 1;
+  min-width: 200px;
+}
+
+.service-card:hover {
+  border-color: #a57921;
+}
+
+.service-card.selected {
+  background-color: #ebf4ff;
+  border-color: #a57921;
+}
+
+.service-card h5 {
+  margin-top: 0;
+  color: #a57921;
+}
+
+.service-price {
+  font-weight: bold;
+  color: #a57921;
+  margin-top: 10px;
+}
+
+.error-message {
+  color: #e53e3e;
+  background: #fff5f5;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  text-align: center;
+}
 /* .book-container {
     padding: 2rem;
   }

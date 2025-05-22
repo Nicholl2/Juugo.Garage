@@ -1,0 +1,141 @@
+/* HistoryPage.css */
+.history-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.history-container {
+  flex: 1;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.history-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.history-header h1 {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.history-header p {
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+.create-order-btn {
+  background-color: #2e7d32;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+  margin-bottom: 60px;
+}
+
+.create-order-btn:hover {
+  background-color: #1b5e20;
+}
+
+.history-list {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.history-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  transition: transform 0.2s;
+  cursor: pointer;
+}
+
+.history-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.service-info h3 {
+  margin: 0 0 0.5rem 0;
+  color: #333;
+}
+
+.service-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.service-date {
+  color: #666;
+}
+
+.status {
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.status.done {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.price {
+  font-weight: bold;
+  color: #2e7d32;
+}
+
+.divider {
+  height: 1px;
+  background-color: #eee;
+  margin: 1rem 0;
+}
+
+.order-total {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  color: #2e7d32;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+
+.history-footer {
+  text-align: center;
+  padding: 1.5rem;
+  background-color: #f5f5f5;
+  color: #666;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.total-line {
+  font-size: 1.1rem;
+  font-weight: bold;
+  border-top: 1px solid #ddd;
+  padding-top: 1rem;
+  margin-top: 1rem;
+}
