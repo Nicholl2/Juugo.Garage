@@ -201,6 +201,57 @@ app.post('/api/bookings', async (req, res) => {
     if (conn) conn.release();
   }
 });
+
+// server.js - Tambahkan endpoint ini
+app.get('/api/history', async (req, res) => {
+  try {
+    const { user_id } = req.query;
+
+    if (!user_id) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'User ID diperlukan' 
+      });
+    }
+
+    // Ambil data dari tabel riwayat dan services
+    const [orders] = await pool.query(`
+      SELECT r.id_riwayat AS id_order,
+             r.service_date AS order_date,
+             s.nama_layanan,
+             s.harga,
+             r.deskripsi AS status
+      FROM riwayat r
+      JOIN services s ON r.id_services = s.id_services
+      WHERE r.id_users = ?
+      ORDER BY r.service_date DESC
+    `, [user_id]);
+
+    // Format hasilnya untuk frontend
+    const formattedOrders = orders.map(order => ({
+      id: order.id_order,
+      date: new Date(order.order_date).toLocaleDateString('id-ID'),
+      status: order.status || 'Done',
+      items: [{
+        name: order.nama_layanan,
+        price: order.harga
+      }]
+    }));
+
+    res.json({
+      success: true,
+      data: formattedOrders
+    });
+
+  } catch (err) {
+    console.error('Error fetching history:', err);
+    res.status(500).json({ 
+      success: false,
+      message: 'Gagal mengambil history order' 
+    });
+  }
+});
+
 // Login Endpoint (Fixed)
 app.post('/api/login', async (req, res) => {
   try {

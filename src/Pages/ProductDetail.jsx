@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar/Navbar';
 import Footer from '../components/Footer/Footer';
 import './ProductDetail.css';
@@ -13,7 +13,6 @@ import GasSpontan from '../assets/gasspontan.jpg';
 import ShockBreker from '../assets/ohlins shock.jpg';
 import AkiMotor from '../assets/aki.jpg';
 
-//       price: 150000,
 // Product Data (consider moving to a separate file)
 const importImage = (imageName) => {
   try {
@@ -126,7 +125,16 @@ const productData = {
 
 const ProductDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const product = productData[id];
+
+  const handleBuyNow = () => {
+    navigate('/book'); // Ganti dengan path yang sesuai untuk BookAppointment.jsx
+  };
+
+  const handleBatalkan = () => {
+    navigate('/products'); // Atau path lain jika berbeda
+  };
 
   if (!product) {
     return (
@@ -179,8 +187,12 @@ const ProductDetail = () => {
             </div>
             
             <div className="product-detail__actions">
-              <button className="btn btn--primary">Beli Sekarang</button>
-              <button className="btn btn--secondary">Buat Janji</button>
+              <button className="btn btn--primary" onClick={handleBuyNow}>
+                Beli Sekarang
+              </button>
+              <button className="btn btn--secondary" onClick={handleBatalkan}>
+                Batalkan
+              </button>
             </div>
           </div>
         </div>
@@ -189,6 +201,5 @@ const ProductDetail = () => {
     </div>
   );
 };
-
 
 export default ProductDetail;
