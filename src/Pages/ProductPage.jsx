@@ -1,10 +1,8 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './ProductPage.css';
-
 import Navbar from '../components/Navbar/Navbar';
 import Footer from '../components/Footer/Footer';
-
 import Motoroil from '../assets/MotorXoil.png';
 import aeroshield from '../assets/AeroShield.png';
 import bantubles from '../assets/banTubbles.png';
@@ -99,6 +97,7 @@ const ProductPage = () => {
               state={{ product }}
               className="product-card"
               key={index}
+              style={{ textDecoration: 'none' }}
             >
               <img src={product.image} alt={product.name} />
               <h4>{product.name}</h4>

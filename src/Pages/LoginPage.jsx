@@ -44,6 +44,7 @@ const handleLogin = async (e) => {
     // Simpan data user
     localStorage.setItem('isLoggedIn', 'true');
     localStorage.setItem('user', JSON.stringify(data.user));
+    localStorage.setItem('user_id', data.user.id_users);
     
     // Redirect ke halaman landing
     navigate('/Dashboard');
@@ -53,35 +54,6 @@ const handleLogin = async (e) => {
     setError(err.message || 'Terjadi kesalahan server');
   }
 };
-
-  // const handleLogin = async (e) => {
-  //   e.preventDefault();
-  //   setError('');
-
-  //   try {
-  //     const response = await fetch('http://localhost:5000/api/login', {
-  //       method: 'POST',
-  //       headers: { 'Content-Type': 'application/json' },
-  //       body: JSON.stringify({
-  //         identifier: formData.identifier, // Kirim identifier (email/username)
-  //         password: formData.password
-  //       })
-  //     });
-
-  //     const result = await response.json();
-
-  //     if (response.ok) {
-  //       localStorage.setItem('isLoggedIn', 'true');
-  //       localStorage.setItem('user', JSON.stringify(result.user));
-  //       navigate('/landing');
-  //     } else {
-  //       setError(result.message || 'Login gagal. Periksa kredensial Anda.');
-  //     }
-  //   } catch (error) {
-  //     console.error('Error:', error);
-  //     setError('Terjadi kesalahan server. Silakan coba lagi.');
-  //   }
-  // };
 
   return (
     <div className="login-container">
