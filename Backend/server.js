@@ -138,15 +138,30 @@ app.post('/api/bookings', async (req, res) => {
       full_name, 
       phone, 
       email, 
-      licence, 
-      service_date, 
-      deskripsi 
+      licence 
     } = req.body;
 
-    if (!id_users || !id_services || !full_name || !phone || !email || !licence || !service_date) {
+    // Validasi input lebih ketat
+    if (!id_users || !id_services || !full_name || !phone || !email || !licence) {
       return res.status(400).json({ 
         success: false,
-        message: 'Semua field wajib diisi'
+        message: 'Semua field wajib diisi',
+        required_fields: ['id_users', 'id_services', 'full_name', 'phone', 'email', 'licence']
+      });
+    }
+
+    // Validasi format email dan nomor telepon
+    if (!/^\d{10,15}$/.test(phone)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Nomor telepon harus 10-15 digit angka'
+      });
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Format email tidak valid'
       });
     }
 
@@ -154,20 +169,34 @@ app.post('/api/bookings', async (req, res) => {
     await conn.beginTransaction();
 
     try {
+      // 1. Insert ke tabel orders (tanpa order_date karena sudah ada default)
       const [orderResult] = await conn.query(
-        `INSERT INTO orders 
-         (id_users, id_services, full_name, phone, email, licence, order_date) 
-         VALUES (?, ?, ?, ?, ?, ?, NOW())`,
+        `INSERT INTO orders_test 
+        (id_users, id_services, full_name, phone, email, licence) 
+        VALUES (?, ?, ?, ?, ?, ?)`,
         [id_users, id_services, full_name, phone, email, licence]
       );
 
+      const orderId = orderResult.insertId;
+
+      // 2. Insert ke tabel riwayat (dengan penyesuaian struktur)
+      const serviceDate = new Date();
+      serviceDate.setDate(serviceDate.getDate() + 3); // 3 hari dari sekarang
+      
       const [historyResult] = await conn.query(
         `INSERT INTO riwayat 
-         (id_users, id_services, service_date, deskripsi) 
-         VALUES (?, ?, ?, ?)`,
-        [id_users, id_services, service_date, deskripsi || `Service untuk ${full_name}`]
+        (id_users, id_services, service_date, deskripsi, id_order) 
+        VALUES (?, ?, ?, ?, ?)`,
+        [
+          id_users, 
+          id_services, 
+          serviceDate, 
+          `Booking untuk ${full_name} (${licence})`, 
+          orderId
+        ]
       );
 
+      // 3. Ambil data service untuk response
       const [serviceData] = await conn.query(
         `SELECT nama_layanan, harga FROM services WHERE id_services = ?`,
         [id_services]
@@ -177,17 +206,33 @@ app.post('/api/bookings', async (req, res) => {
 
       res.status(201).json({
         success: true,
+        message: 'Booking berhasil dibuat',
         data: {
-          orderId: orderResult.insertId,
-          historyId: historyResult.insertId,
-          service: serviceData[0]
-        },
-        message: 'Booking berhasil dibuat'
+          booking_id: historyResult.insertId,
+          order_id: orderId,
+          customer: {
+            name: full_name,
+            phone: phone,
+            email: email,
+            licence: licence
+          },
+          service: serviceData[0],
+          service_date: serviceDate.toISOString()
+        }
       });
 
     } catch (err) {
       await conn.rollback();
       console.error('Transaction error:', err);
+      
+      // Handle error constraint foreign key khusus
+      if (err.code === 'ER_NO_REFERENCED_ROW_2') {
+        return res.status(400).json({
+          success: false,
+          message: 'Data user atau service tidak ditemukan'
+        });
+      }
+      
       throw err;
     }
   } catch (err) {
@@ -195,7 +240,8 @@ app.post('/api/bookings', async (req, res) => {
     res.status(500).json({ 
       success: false,
       message: 'Gagal membuat booking',
-      error: err.message
+      error: err.sqlMessage || err.message,
+      error_code: err.code
     });
   } finally {
     if (conn) conn.release();
@@ -206,6 +252,7 @@ app.post('/api/bookings', async (req, res) => {
 app.get('/api/history', async (req, res) => {
   try {
     const { user_id } = req.query;
+    console.log('Fetching history for user:', user_id); // Debug log
 
     if (!user_id) {
       return res.status(400).json({ 
@@ -214,27 +261,34 @@ app.get('/api/history', async (req, res) => {
       });
     }
 
-    // Ambil data dari tabel riwayat dan services
     const [orders] = await pool.query(`
-      SELECT r.id_riwayat AS id_order,
-             r.service_date AS order_date,
-             s.nama_layanan,
-             s.harga,
-             r.deskripsi AS status
-      FROM riwayat r
-      JOIN services s ON r.id_services = s.id_services
-      WHERE r.id_users = ?
-      ORDER BY r.service_date DESC
+      SELECT 
+        o.id_order AS id,
+        DATE_FORMAT(o.order_date, '%d %M %Y') AS date,
+        'Completed' AS status,
+        o.full_name,
+        o.phone,
+        o.licence,
+        s.nama_layanan AS service_name,
+        s.harga AS service_price
+      FROM orders_test o
+      JOIN services s ON o.id_services = s.id_services
+      WHERE o.id_users = ?
+      ORDER BY o.order_date DESC
     `, [user_id]);
 
-    // Format hasilnya untuk frontend
+    console.log('Database results:', orders); // Debug log
+
     const formattedOrders = orders.map(order => ({
-      id: order.id_order,
-      date: new Date(order.order_date).toLocaleDateString('id-ID'),
-      status: order.status || 'Done',
+      id: order.id,
+      date: order.date,
+      status: order.status,
+      full_name: order.full_name,
+      phone: order.phone,
+      licence: order.licence,
       items: [{
-        name: order.nama_layanan,
-        price: order.harga
+        name: order.service_name,
+        price: order.service_price
       }]
     }));
 
@@ -244,13 +298,81 @@ app.get('/api/history', async (req, res) => {
     });
 
   } catch (err) {
-    console.error('Error fetching history:', err);
+    console.error('Error in /api/history:', err);
     res.status(500).json({ 
       success: false,
-      message: 'Gagal mengambil history order' 
+      message: 'Gagal mengambil history order',
+      error: err.message
     });
   }
 });
+// app.get('/api/history', async (req, res) => {
+//   try {
+//     const { user_id } = req.query;
+
+//     if (!user_id) {
+//       return res.status(400).json({ 
+//         success: false,
+//         message: 'User ID diperlukan' 
+//       });
+//     }
+
+//     // Ambil data dari tabel riwayat, services, dan orders
+//     const [orders] = await pool.query(`
+//       SELECT 
+//         r.id_riwayat AS id_order,
+//         r.service_date AS order_date,
+//         s.nama_layanan,
+//         s.harga,
+//         r.deskripsi AS status,
+//         o.full_name,
+//         o.phone,
+//         o.licence
+//       FROM riwayat r
+//       JOIN services s ON r.id_services = s.id_services
+//       JOIN orders o ON r.id_order = o.id_order
+//       WHERE r.id_users = ?
+//       ORDER BY r.service_date DESC
+//     `, [user_id]);
+
+//     // Gabungkan item per order
+//     const grouped = {};
+
+//     orders.forEach(order => {
+//       if (!grouped[order.id_order]) {
+//         grouped[order.id_order] = {
+//           id: order.id_order,
+//           date: new Date(order.order_date).toLocaleDateString('id-ID'),
+//           status: order.status || 'Done',
+//           full_name: order.full_name,
+//           phone: order.phone,
+//           licence: order.licence,
+//           items: []
+//         };
+//       }
+
+//       grouped[order.id_order].items.push({
+//         name: order.nama_layanan,
+//         price: order.harga
+//       });
+//     });
+
+//     const formattedOrders = Object.values(grouped);
+
+//     res.json({
+//       success: true,
+//       data: formattedOrders
+//     });
+
+//   } catch (err) {
+//     console.error('Error fetching history:', err);
+//     res.status(500).json({ 
+//       success: false,
+//       message: 'Gagal mengambil history order' 
+//     });
+//   }
+// });
+
 
 // Login Endpoint (Fixed)
 app.post('/api/login', async (req, res) => {
