@@ -467,20 +467,64 @@ app.put('/api/orders/:id', async (req, res) => {
 app.delete('/api/users/:id', async (req, res) => {
   const { id } = req.params;
 
+  // Validasi ID
+  if (!id || isNaN(id)) {
+    return res.status(400).json({ success: false, message: 'ID user tidak valid' });
+  }
+
+  let connection;
   try {
-    const [result] = await pool.query(
+    // Mulai transaksi
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+
+    // 1. Hapus data riwayat yang terkait dengan order user ini
+    await connection.query(
+      'DELETE FROM riwayat WHERE id_users = ?',
+      [id]
+    );
+
+    // 2. Hapus data order yang terkait dengan user ini
+    await connection.query(
+      'DELETE FROM orders_test WHERE id_users = ?',
+      [id]
+    );
+
+    // 3. Hapus user itu sendiri
+    const [userResult] = await connection.query(
       'DELETE FROM users WHERE id_users = ?',
       [id]
     );
 
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: 'User not found' });
+    if (userResult.affectedRows === 0) {
+      await connection.rollback();
+      return res.status(404).json({ 
+        success: false, 
+        message: 'User tidak ditemukan' 
+      });
     }
 
-    res.status(200).json({ message: 'User deleted successfully' });
+    // Commit transaksi jika semua operasi berhasil
+    await connection.commit();
+
+    res.status(200).json({ 
+      success: true, 
+      message: 'User dan semua data terkait berhasil dihapus' 
+    });
+
   } catch (err) {
+    // Rollback transaksi jika terjadi error
+    if (connection) await connection.rollback();
+    
     console.error('Delete user error:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ 
+      success: false, 
+      message: 'Terjadi kesalahan server',
+      error: err.message 
+    });
+  } finally {
+    // Pastikan koneksi dilepas
+    if (connection) connection.release();
   }
 });
 
