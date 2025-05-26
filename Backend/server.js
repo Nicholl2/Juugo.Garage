@@ -360,14 +360,27 @@ app.put('/api/users/:id', async (req, res) => {
     const fields = [];
     const values = [];
 
+    // Cek apakah email sudah digunakan oleh user lain
+    if (email) {
+      const [existingEmail] = await pool.query(
+        'SELECT id_users FROM users WHERE email = ? AND id_users != ?',
+        [email, userId]
+      );
+
+      if (existingEmail.length > 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'Email sudah digunakan oleh pengguna lain',
+        });
+      }
+
+      fields.push('email = ?');
+      values.push(email);
+    }
+
     if (username) {
       fields.push('username = ?');
       values.push(username);
-    }
-
-    if (email) {
-      fields.push('email = ?');
-      values.push(email);
     }
 
     if (password && password.trim() !== '') {
@@ -388,16 +401,25 @@ app.put('/api/users/:id', async (req, res) => {
       return res.status(404).json({ success: false, message: 'User tidak ditemukan' });
     }
 
-    const [updatedRows] = await pool.query('SELECT id_users, username, email FROM users WHERE id_users = ?', [userId]);
+    const [updatedRows] = await pool.query(
+      'SELECT id_users, username, email FROM users WHERE id_users = ?',
+      [userId]
+    );
+
     const updatedUser = updatedRows[0];
 
-    res.json({ success: true, message: 'Data berhasil diupdate', user: updatedUser });
+    res.json({
+      success: true,
+      message: 'Data berhasil diupdate',
+      user: updatedUser,
+    });
 
   } catch (err) {
     console.error('Update user error:', err);
     res.status(500).json({ success: false, message: 'Terjadi kesalahan server' });
   }
 });
+
 
 // Endpoint untuk update order
 app.put('/api/orders/:id', async (req, res) => {
