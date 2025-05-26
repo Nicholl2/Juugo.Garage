@@ -399,6 +399,48 @@ app.put('/api/users/:id', async (req, res) => {
   }
 });
 
+// Endpoint untuk update order
+app.put('/api/orders/:id', async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    const { full_name, phone, licence } = req.body;
+
+    if (!full_name || !phone || !licence) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Semua field wajib diisi' 
+      });
+    }
+
+    const [result] = await pool.query(
+      `UPDATE orders_test 
+       SET full_name = ?, phone = ?, licence = ?
+       WHERE id_order = ?`,
+      [full_name, phone, licence, orderId]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ 
+        success: false,
+        message: 'Order tidak ditemukan' 
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Order berhasil diupdate'
+    });
+
+  } catch (err) {
+    console.error('Error updating order:', err);
+    res.status(500).json({ 
+      success: false,
+      message: 'Terjadi kesalahan server saat mengupdate order',
+      error: err.message
+    });
+  }
+});
+
 // DELETE USER
 app.delete('/api/users/:id', async (req, res) => {
   const { id } = req.params;
