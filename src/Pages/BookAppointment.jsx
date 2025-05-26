@@ -17,6 +17,9 @@ const BookAppointment = () => {
   const [services, setServices] = useState([]);
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+
 
   useEffect(() => {
     document.title = 'Juugo Garage | Book Appointment';
@@ -59,83 +62,107 @@ const BookAppointment = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setIsSubmitting(true);
+  e.preventDefault();
+  setError('');
+  setIsSubmitting(true);
 
-    // Validasi lebih ketat
-    if (!formData.full_name || !formData.phone || !formData.licence || !formData.serviceType) {
-      setError('Harap isi semua field');
-      setIsSubmitting(false);
-      return;
+  if (!formData.full_name || !formData.phone || !formData.licence || !formData.serviceType) {
+    setError('Harap isi semua field');
+    setIsSubmitting(false);
+    return;
+  }
+
+  if (!/^[0-9]{10,13}$/.test(formData.phone)) {
+    setError('Nomor telepon harus 10-13 digit angka');
+    setIsSubmitting(false);
+    return;
+  }
+
+  try {
+    const selectedService = services.find(s => s.id_services === formData.serviceType);
+    if (!selectedService) {
+      throw new Error('Service tidak valid');
     }
 
-    // Validasi format nomor telepon
-    if (!/^[0-9]{10,13}$/.test(formData.phone)) {
-      setError('Nomor telepon harus 10-13 digit angka');
-      setIsSubmitting(false);
-      return;
+    const serviceDate = new Date();
+    serviceDate.setDate(serviceDate.getDate() + 3);
+    const formattedDate = serviceDate.toISOString().split('T')[0];
+
+    const response = await fetch('http://localhost:5000/api/bookings', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+      },
+      body: JSON.stringify({
+        id_users: userData.id_users,
+        id_services: formData.serviceType,
+        full_name: formData.full_name,
+        phone: formData.phone,
+        email: userData.email,
+        licence: formData.licence,
+        service_date: formattedDate,
+        deskripsi: `Booking ${selectedService.nama_layanan}`
+      })
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || 'Gagal membuat booking');
     }
 
-    try {
-      const selectedService = services.find(s => s.id_services === formData.serviceType);
-      if (!selectedService) {
-        throw new Error('Service tidak valid');
-      }
+    // Tampilkan popup
+    setSuccessMessage(`Booking berhasil!\nService: ${selectedService.nama_layanan}\nTanggal: ${formattedDate}`);
+    setShowSuccessPopup(true);
+    
+    // Reset form
+    setFormData({
+      full_name: '',
+      phone: '',
+      licence: '',
+      serviceType: null
+    });
+    
+    // Hapus navigate dari sini, pindahkan ke handler tombol popup
 
-      // Format tanggal (3 hari dari sekarang)
-      const serviceDate = new Date();
-      serviceDate.setDate(serviceDate.getDate() + 3);
-      const formattedDate = serviceDate.toISOString().split('T')[0];
-
-      const response = await fetch('http://localhost:5000/api/bookings', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-        },
-        body: JSON.stringify({
-          id_users: userData.id_users,
-          id_services: formData.serviceType,
-          full_name: formData.full_name,
-          phone: formData.phone,
-          email: userData.email,
-          licence: formData.licence,
-          service_date: formattedDate,
-          deskripsi: `Booking ${selectedService.nama_layanan}`
-        })
-      });
-
-      const result = await response.json();
-
-      if (!response.ok || !result.success) {
-        throw new Error(result.message || 'Gagal membuat booking');
-      }
-
-      // Tampilkan alert dengan informasi yang benar
-      alert(`Booking berhasil!\nService: ${selectedService.nama_layanan}\nTanggal: ${formattedDate}`);
-      
-      // Reset form
-      setFormData({
-        full_name: '',
-        phone: '',
-        licence: '',
-        serviceType: null
-      });
-      
-      // Navigasi ke history
-      navigate('/history');
-      
-    } catch (err) {
-      console.error('Booking error:', err);
-      setError(err.message || 'Terjadi kesalahan saat membuat booking');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  } catch (err) {
+    console.error('Booking error:', err);
+    setError(err.message || 'Terjadi kesalahan saat membuat booking');
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   return (
+    
     <div className="book-container">
+      {showSuccessPopup && (
+    <div className="popup-overlay">
+      <div className="popup">
+        <h3>Booking Berhasil!</h3>
+        <p>{successMessage}</p>
+        <div className="popup-buttons">
+          <button 
+            className="popup-btn secondary"
+            onClick={() => setShowSuccessPopup(false)}
+          >
+            Kembali
+          </button>
+          <button 
+            className="popup-btn primary"
+            onClick={() => {
+              setShowSuccessPopup(false);
+              navigate('/history');
+            }}
+          >
+            Lihat Riwayat
+          </button>
+        </div>
+      </div>
+    </div>
+)}
+
       <Navbar/>
       
       <section className="intro">
