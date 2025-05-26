@@ -9,22 +9,30 @@ const RegisterPage = () => {
   useEffect(() => {
     document.title = 'Register | Juugo.Garage';
   }, []);
+  
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: '',
     email: '',
     password: ''
   });
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setError(null); // Reset error saat user mulai mengetik
   };
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+    setError(null);
 
     if (!formData.username || !formData.email || !formData.password) {
-      return alert('Semua field wajib diisi!');
+      setError('Semua field wajib diisi!');
+      setIsLoading(false);
+      return;
     }
 
     try {
@@ -34,15 +42,19 @@ const RegisterPage = () => {
         body: JSON.stringify(formData)
       });
 
-      if (response.ok) {
-        alert('Registrasi berhasil!');
-        navigate('/login');
-      } else {
-        alert('Gagal registrasi. Coba lagi.');
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Gagal registrasi');
       }
+
+      alert('Registrasi berhasil!');
+      navigate('/login');
     } catch (error) {
       console.error('Error saat register:', error);
-      alert('Terjadi kesalahan.');
+      setError(error.message || 'Terjadi kesalahan saat registrasi');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -53,6 +65,12 @@ const RegisterPage = () => {
         <h2>Register</h2>
         <p>Enter your credentials to access your account</p>
 
+        {error && (
+          <div className="register-error">
+            {error}
+          </div>
+        )}
+
         <form className="register-form" onSubmit={handleRegister}>
           <input
             type="text"
@@ -60,6 +78,7 @@ const RegisterPage = () => {
             placeholder="Enter your username"
             value={formData.username}
             onChange={handleChange}
+            required
           />
           <input
             type="email"
@@ -67,6 +86,7 @@ const RegisterPage = () => {
             placeholder="Enter your Email"
             value={formData.email}
             onChange={handleChange}
+            required
           />
           <input
             type="password"
@@ -74,8 +94,11 @@ const RegisterPage = () => {
             placeholder="Enter your password"
             value={formData.password}
             onChange={handleChange}
+            required
           />
-          <button type="submit">Register</button>
+          <button type="submit" disabled={isLoading}>
+            {isLoading ? 'Memproses...' : 'Register'}
+          </button>
         </form>
 
         <p className="login-redirect">
