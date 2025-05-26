@@ -276,7 +276,7 @@ const Settings = () => {
           </div>
 
           <div className="form-actions">
-            <button type="button" className="btn-secondary" onClick={() => navigate('/')}>
+            <button type="button" className="btn-secondary" onClick={() => navigate('/dashboard')}>
               Cancel
             </button>
             <button type="submit" className="btn-primary">

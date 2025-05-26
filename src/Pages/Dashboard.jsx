@@ -94,7 +94,7 @@ const LandingPage = () => {
           <div className="service-card" onClick={() => navigate('/book')}>
             <h3>Full Service</h3>
             <p>Safety Check</p>
-            <p className="price">Rp 1000.000</p>
+            <p className="price">Rp 1.000.000</p>
           </div>
         </div>
       </section>

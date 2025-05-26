@@ -4,132 +4,168 @@ import './HistoryPage.css';
 import Navbar from '../components/Navbar/Navbar';
 
 const HistoryPage = () => {
-  useEffect(() => {
-    document.title = 'History | Juugo.Garage';
-  }, []);
-
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
+    document.title = 'History | Juugo.Garage';
+    
     const fetchOrders = async () => {
       try {
         const token = localStorage.getItem('token');
         const user = JSON.parse(localStorage.getItem('user'));
-        const user_id = user?.id_users;
+        
+        if (!user || !user.id_users) {
+          navigate('/login');
+          return;
+        }
 
-
-        const response = await fetch(`http://localhost:5000/api/history?user_id=${user_id}`, {
+        const response = await fetch(`http://localhost:5000/api/history?user_id=${user.id_users}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
         });
 
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
         const result = await response.json();
 
-        if (response.ok && result.success) {
-          setOrders(result.data);
+        if (result.success) {
+          setOrders(result.data || []);
         } else {
-          console.error('Gagal memuat data:', result.message);
+          setError(result.message || 'Failed to load history');
         }
       } catch (error) {
-        console.error('Error fetching orders:', error);
+        console.error('Fetch error:', error);
+        setError(error.message || 'Failed to fetch orders');
       } finally {
         setLoading(false);
       }
     };
 
     fetchOrders();
-  }, []);
+  }, [navigate]);
 
-  const calculateTotal = items => items.reduce((sum, item) => sum + item.price, 0);
+  const calculateTotal = (items) => {
+    return items.reduce((total, item) => total + parseInt(item.price), 0);
+  };
 
-  if (loading) return <div className="loading">Loading history...</div>;
+  if (loading) {
+    return (
+      <div className="history-page">
+        <Navbar />
+        <div className="loading">Loading your service history...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="history-page">
+        <Navbar />
+        <div className="error-message">
+          <p>Error: {error}</p>
+          <button onClick={() => window.location.reload()}>Try Again</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="history-page">
       <Navbar />
-
+      
       <div className="history-container">
-        <div className="history-header" style={{ textAlign: 'center' }}>
+        <div className="history-header">
           <h1>Service History</h1>
-          <p>Track your completed services</p>
-          <button
+          <p>Your completed service appointments</p>
+          <button 
             className="create-order-btn"
-            onClick={() => navigate('/services')}
+            onClick={() => navigate('/book')}
           >
-            Create New Order
+            Book New Service
           </button>
         </div>
 
         {selectedOrder ? (
           <div className="order-detail-view">
-            <button
+            <button 
               className="back-button"
               onClick={() => setSelectedOrder(null)}
             >
-              ← Back to List
+              &larr; Back to List
             </button>
-
-            <div className="history-card">
-              <div className="service-meta">
-                <span className="order-id">Order #{selectedOrder.id}</span>
-                <span className={`status ${selectedOrder.status.toLowerCase()}`}>
+            
+            <div className="history-card detailed-view">
+              <div className="order-meta">
+                <h3>Order #{selectedOrder.id}</h3>
+                <span className={`status-badge ${selectedOrder.status.toLowerCase()}`}>
                   {selectedOrder.status}
                 </span>
               </div>
-              <div className="service-date">{selectedOrder.date}</div>
-
-              <div className="divider"></div>
-
-              <div className="service-items">
+              
+              <p className="order-date">{selectedOrder.date}</p>
+              
+              <div className="customer-details">
+                <h4>Customer Information</h4>
+                <p><strong>Name:</strong> {selectedOrder.full_name}</p>
+                <p><strong>Phone:</strong> {selectedOrder.phone}</p>
+                <p><strong>Vehicle License:</strong> {selectedOrder.licence}</p>
+              </div>
+              
+              <div className="service-details">
+                <h4>Service Performed</h4>
                 {selectedOrder.items.map((item, index) => (
-                  <div key={index} className="service-meta">
-                    <span className="service-name">• {item.name}</span>
-                    <span className="price">Rp {item.price.toLocaleString('id-ID')}</span>
+                  <div key={index} className="service-item">
+                    <span>{item.name}</span>
+                    <span>Rp {parseInt(item.price).toLocaleString('id-ID')}</span>
                   </div>
                 ))}
               </div>
-
-              <div className="divider"></div>
-
-              <div className="service-meta total-line">
-                <span>Total</span>
-                <span className="price">Rp {calculateTotal(selectedOrder.items).toLocaleString('id-ID')}</span>
+              
+              <div className="order-total">
+                <strong>Total</strong>
+                <strong>Rp {parseInt(calculateTotal(selectedOrder.items)).toLocaleString('id-ID')}</strong>
               </div>
             </div>
           </div>
         ) : (
           <div className="history-list">
             {orders.length === 0 ? (
-              <p style={{ textAlign: 'center' }}>Tidak ada riwayat servis.</p>
+              <div className="empty-state">
+                <p>No service history found</p>
+              </div>
             ) : (
               orders.map(order => (
-                <div
-                  key={order.id}
-                  className="history-card"
+                <div 
+                  key={order.id} 
+                  className="history-card list-item"
                   onClick={() => setSelectedOrder(order)}
                 >
-                  <div className="service-info">
-                    <h3>Order #{order.id}</h3>
-                    <div className="service-meta">
-                      <span className="service-date">{order.date}</span>
-                      <span className={`status ${order.status.toLowerCase()}`}>
-                        {order.status}
-                      </span>
-                    </div>
+                  <div className="order-meta">
+                    <h4>Order #{order.id}</h4>
+                    <span className={`status-badge ${order.status.toLowerCase()}`}>
+                      {order.status}
+                    </span>
                   </div>
+                  <p className="order-date">{order.date}</p>
+                  <p className="service-preview">
+                    {order.items[0].name} - Rp {parseInt(order.items[0].price).toLocaleString('id-ID')}
+                  </p>
                 </div>
               ))
             )}
           </div>
         )}
       </div>
-
+      
       <footer className="history-footer">
-        © 2025 Juugo.Garage. All Rights Reserved
+        © {new Date().getFullYear()} Juugo Garage. All rights reserved.
       </footer>
     </div>
   );
