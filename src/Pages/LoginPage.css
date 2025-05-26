@@ -4,45 +4,50 @@
     flex-direction: column;
     justify-content: space-between;
     font-family: sans-serif;
-  }
-  
-  
-  .login-main {
+
+    /* Animasi fade in dari bawah */
+    opacity: 0;
+    transform: translateY(30px);
+    animation: slideUpFadeIn 0.4s ease forwards;
+    animation-delay: 0.2s;
+}
+
+.login-main {
     text-align: center;
     font-family: 'roboto', sans-serif;
     padding: 2rem;
-  }
-  
-  .login-main h2 {
+}
+
+.login-main h2 {
     font-size: 2rem;
     font-family: 'roboto', sans-serif;
     margin-bottom: 1rem;
-  }
-  
-  .login-main p {
+}
+
+.login-main p {
     color: #555;
     margin-bottom: 1.5rem;
     line-height: 1.5;
     font-family: 'roboto', sans-serif;
-  }
-  
-  .login-form {
+}
+
+.login-form {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 1rem;
     max-width: 300px;
     margin: 0 auto;
-  }
-  
-  .login-form input {
+}
+
+.login-form input {
     padding: 0.75rem;
     width: 100%;
     border: 1px solid #ccc;
     border-radius: 5px;
-  }
-  
-  .login-form button {
+}
+
+.login-form button {
     padding: 0.75rem;
     width: 100%;
     background: black;
@@ -50,23 +55,34 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
-  }
-  
-  .register-text {
+}
+
+.register-text {
     margin-top: 1rem;
     color: #333;
-  }
-  
-  footer {
+}
+
+footer {
     text-align: center;
     font-size: 0.9rem;
-    color: #555;
+    color: #ffffff;
     padding: 1rem;
     border-top: 1px solid #eee;
-  }
-  
-  footer a {
-    color: black;
+}
+
+footer a {
+    color: rgb(255, 255, 255);
     text-decoration: underline;
-  }
-  
+}
+
+/* Animasi reuse dari yang sebelumnya */
+@keyframes slideUpFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

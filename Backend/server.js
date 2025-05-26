@@ -77,7 +77,6 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
-// Endpoint untuk membuat appointment baru
 // Endpoint untuk mendapatkan layanan
 app.get('/api/services', async (req, res) => {
   try {
@@ -90,12 +89,10 @@ app.get('/api/services', async (req, res) => {
 });
 
 // Endpoint untuk membuat order
-
 app.post('/api/orders', async (req, res) => {
   try {
     const { id_users, id_services, full_name, phone, email, licence } = req.body;
 
-    // Validasi
     if (!id_users || !id_services || !full_name || !phone || !email || !licence) {
       return res.status(400).json({ 
         success: false,
@@ -103,7 +100,6 @@ app.post('/api/orders', async (req, res) => {
       });
     }
 
-    // Buat order baru
     const [result] = await pool.query(
       `INSERT INTO orders 
        (id_users, id_services, full_name, phone, email, licence) 
@@ -128,6 +124,7 @@ app.post('/api/orders', async (req, res) => {
     });
   }
 });
+
 // Endpoint untuk membuat booking
 app.post('/api/bookings', async (req, res) => {
   let conn;
@@ -141,7 +138,6 @@ app.post('/api/bookings', async (req, res) => {
       licence 
     } = req.body;
 
-    // Validasi input lebih ketat
     if (!id_users || !id_services || !full_name || !phone || !email || !licence) {
       return res.status(400).json({ 
         success: false,
@@ -150,7 +146,6 @@ app.post('/api/bookings', async (req, res) => {
       });
     }
 
-    // Validasi format email dan nomor telepon
     if (!/^\d{10,15}$/.test(phone)) {
       return res.status(400).json({
         success: false,
@@ -169,7 +164,6 @@ app.post('/api/bookings', async (req, res) => {
     await conn.beginTransaction();
 
     try {
-      // 1. Insert ke tabel orders (tanpa order_date karena sudah ada default)
       const [orderResult] = await conn.query(
         `INSERT INTO orders_test 
         (id_users, id_services, full_name, phone, email, licence) 
@@ -179,9 +173,8 @@ app.post('/api/bookings', async (req, res) => {
 
       const orderId = orderResult.insertId;
 
-      // 2. Insert ke tabel riwayat (dengan penyesuaian struktur)
       const serviceDate = new Date();
-      serviceDate.setDate(serviceDate.getDate() + 3); // 3 hari dari sekarang
+      serviceDate.setDate(serviceDate.getDate() + 3); 
       
       const [historyResult] = await conn.query(
         `INSERT INTO riwayat 
@@ -196,7 +189,6 @@ app.post('/api/bookings', async (req, res) => {
         ]
       );
 
-      // 3. Ambil data service untuk response
       const [serviceData] = await conn.query(
         `SELECT nama_layanan, harga FROM services WHERE id_services = ?`,
         [id_services]
@@ -225,7 +217,6 @@ app.post('/api/bookings', async (req, res) => {
       await conn.rollback();
       console.error('Transaction error:', err);
       
-      // Handle error constraint foreign key khusus
       if (err.code === 'ER_NO_REFERENCED_ROW_2') {
         return res.status(400).json({
           success: false,
@@ -248,11 +239,11 @@ app.post('/api/bookings', async (req, res) => {
   }
 });
 
-// server.js - Tambahkan endpoint ini
+// Endpoint ambil history order
 app.get('/api/history', async (req, res) => {
   try {
     const { user_id } = req.query;
-    console.log('Fetching history for user:', user_id); // Debug log
+    console.log('Fetching history for user:', user_id); 
 
     if (!user_id) {
       return res.status(400).json({ 
@@ -306,73 +297,6 @@ app.get('/api/history', async (req, res) => {
     });
   }
 });
-// app.get('/api/history', async (req, res) => {
-//   try {
-//     const { user_id } = req.query;
-
-//     if (!user_id) {
-//       return res.status(400).json({ 
-//         success: false,
-//         message: 'User ID diperlukan' 
-//       });
-//     }
-
-//     // Ambil data dari tabel riwayat, services, dan orders
-//     const [orders] = await pool.query(`
-//       SELECT 
-//         r.id_riwayat AS id_order,
-//         r.service_date AS order_date,
-//         s.nama_layanan,
-//         s.harga,
-//         r.deskripsi AS status,
-//         o.full_name,
-//         o.phone,
-//         o.licence
-//       FROM riwayat r
-//       JOIN services s ON r.id_services = s.id_services
-//       JOIN orders o ON r.id_order = o.id_order
-//       WHERE r.id_users = ?
-//       ORDER BY r.service_date DESC
-//     `, [user_id]);
-
-//     // Gabungkan item per order
-//     const grouped = {};
-
-//     orders.forEach(order => {
-//       if (!grouped[order.id_order]) {
-//         grouped[order.id_order] = {
-//           id: order.id_order,
-//           date: new Date(order.order_date).toLocaleDateString('id-ID'),
-//           status: order.status || 'Done',
-//           full_name: order.full_name,
-//           phone: order.phone,
-//           licence: order.licence,
-//           items: []
-//         };
-//       }
-
-//       grouped[order.id_order].items.push({
-//         name: order.nama_layanan,
-//         price: order.harga
-//       });
-//     });
-
-//     const formattedOrders = Object.values(grouped);
-
-//     res.json({
-//       success: true,
-//       data: formattedOrders
-//     });
-
-//   } catch (err) {
-//     console.error('Error fetching history:', err);
-//     res.status(500).json({ 
-//       success: false,
-//       message: 'Gagal mengambil history order' 
-//     });
-//   }
-// });
-
 
 // Login Endpoint (Fixed)
 app.post('/api/login', async (req, res) => {
@@ -401,7 +325,6 @@ app.post('/api/login', async (req, res) => {
 
     const user = rows[0];
     
-    // NOTE: Untuk sementara bypass password verification
     if (user.password !== password) {
       return res.status(401).json({ 
         success: false, 
@@ -412,7 +335,7 @@ app.post('/api/login', async (req, res) => {
     res.json({
       success: true,
       user: {
-        id_users: user.id_users, // ✅ pakai nama kolom yang sesuai di database
+        id_users: user.id_users, 
         username: user.username,
         email: user.email
      }
@@ -449,7 +372,7 @@ app.put('/api/users/:id', async (req, res) => {
 
     if (password && password.trim() !== '') {
       fields.push('password = ?');
-      values.push(password); // nanti bisa hashing juga kalau mau
+      values.push(password); 
     }
 
     if (fields.length === 0) {
@@ -465,7 +388,6 @@ app.put('/api/users/:id', async (req, res) => {
       return res.status(404).json({ success: false, message: 'User tidak ditemukan' });
     }
 
-    // Ambil data terbaru user setelah update
     const [updatedRows] = await pool.query('SELECT id_users, username, email FROM users WHERE id_users = ?', [userId]);
     const updatedUser = updatedRows[0];
 
@@ -498,148 +420,9 @@ app.delete('/api/users/:id', async (req, res) => {
   }
 });
 
-// ... (endpoint lainnya tetap sama)
 
 const PORT = 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
 
-// const express = require('express');
-// const bodyParser = require('body-parser');
-// const mysql = require('mysql2');
-// const cors = require('cors');
-
-// const app = express();
-// app.use(cors());
-// app.use(bodyParser.json());
-
-// // Koneksi ke database MySQL
-// const db = mysql.createConnection({
-//   host: 'localhost',
-//   user: 'root', // Ganti dengan username DB Anda
-//   password: '', // Ganti dengan password DB Anda
-//   database: 'juugo.garage', // Ganti dengan nama database Anda
-// });
-
-// // Di server.js:
-// app.use(cors({
-//   origin: 'http://localhost:3000', // Ganti dengan port frontend
-//   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-//   allowedHeaders: ['Content-Type', 'Authorization']
-// }));
-
-// // Endpoint untuk login
-// app.post('/api/login', (req, res) => {
-//   const { identifier, password } = req.body; // Terima identifier (email/username)
-
-//   // Cek apakah input berupa email atau username
-//   const isEmail = identifier.includes('@');
-  
-//   const query = isEmail 
-//     ? 'SELECT * FROM users WHERE email = ? AND password = ?'
-//     : 'SELECT * FROM users WHERE username = ? AND password = ?';
-
-//   db.query(
-//     query,
-//     [identifier, password],
-//     (err, results) => {
-//       if (err) {
-//         console.error('Database error:', err);
-//         return res.status(500).json({ error: 'Database error' });
-//       }
-      
-//       if (results.length > 0) {
-//         const user = results[0];
-//         res.json({ success: true, user });
-//       } else {
-//         res.status(401).json({ 
-//           success: false, 
-//           message: 'Username/email atau password salah!' 
-//         });
-//       }
-//     }
-//   );
-// });
-
-// app.post('/api/register', (req, res) => {
-//   const { username, email, password } = req.body;
-
-//   if (!username || !email || !password) {
-//     return res.status(400).json({ message: 'Semua field wajib diisi.' });
-//   }
-
-//   // Cek apakah email sudah digunakan
-//   db.query('SELECT * FROM users WHERE email = ?', [email], (err, results) => {
-//     if (err) return res.status(500).json({ message: 'Kesalahan server.' });
-
-//     if (results.length > 0) {
-//       return res.status(400).json({ message: 'Email sudah terdaftar.' });
-//     }
-
-//     // Simpan user baru
-//     db.query(
-//       'INSERT INTO users (username, email, password) VALUES (?, ?, ?)',
-//       [username, email, password],
-//       (err, result) => {
-//         if (err) return res.status(500).json({ message: 'Gagal menyimpan user.' });
-
-//         res.status(201).json({ message: 'Registrasi berhasil!' });
-//       }
-//     );
-//   });
-// });
-
-// // UPDATE USER
-// app.put('/api/users/:id', async (req, res) => {
-//   const { id } = req.params;
-//   const { username, email, password } = req.body;
-
-//   try {
-//     const hashedPassword = await bcrypt.hash(password, 10);
-    
-//     db.query(
-//       'UPDATE users SET username = ?, email = ?, password = ? WHERE id_users = ?',
-//       [username, email, hashedPassword, id],
-//       (err, result) => {
-//         if (err) return res.status(500).json({ error: err.message });
-//         if (result.affectedRows === 0) {
-//           return res.status(404).json({ message: 'User not found' });
-//         }
-        
-//         db.query(
-//           'SELECT * FROM users WHERE id_users = ?',
-//           [id],
-//           (err, results) => {
-//             if (err) return res.status(500).json({ error: err.message });
-//             res.status(200).json(results[0]);
-//           }
-//         );
-//       }
-//     );
-//   } catch (error) {
-//     res.status(500).json({ error: 'Internal server error' });
-//   }
-// });
-
-// // DELETE USER
-// app.delete('/api/users/:id', (req, res) => {
-//   const { id } = req.params;
-
-//   db.query(
-//     'DELETE FROM users WHERE id_users = ?',
-//     [id],
-//     (err, result) => {
-//       if (err) return res.status(500).json({ error: err.message });
-//       if (result.affectedRows === 0) {
-//         return res.status(404).json({ message: 'User not found' });
-//       }
-//       res.status(200).json({ message: 'User deleted successfully' });
-//     }
-//   );
-// });
-
-// const PORT = 5000;
-// app.listen(PORT, () => {
-//   console.log(`Server berjalan di http://localhost:${PORT}`);
-// });

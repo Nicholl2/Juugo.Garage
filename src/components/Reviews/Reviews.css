@@ -3,33 +3,50 @@
     background-color: #fff;
     text-align: center;
     font-family: 'roboto', sans-serif;
-  }
-  
-  .reviews h2 {
+}
+
+.reviews h2 {
     font-size: 2rem;
     margin-bottom: 2rem;
-  }
-  
-  .review-list {
+}
+
+.review-list {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 1.5rem;
-  }
-  
-  .review-card {
+}
+
+.review-card {
     background-color: #f0f0f0;
     padding: 1.2rem 1.5rem;
     border-radius: 8px;
     max-width: 300px;
     font-style: italic;
     position: relative;
-  }
-  
-  .review-card span {
+
+    /* Animasi fade in dari bawah */
+    opacity: 0;
+    transform: translateY(30px);
+    animation: slideUpFadeIn 0.8s ease forwards;
+    animation-delay: 0.3s;
+}
+
+.review-card span {
     display: block;
     margin-top: 1rem;
     font-weight: bold;
     font-style: normal;
-  }
-  
+}
+
+/* Reuse keyframes dari sebelumnya */
+@keyframes slideUpFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

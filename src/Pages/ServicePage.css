@@ -1,52 +1,86 @@
+/* Fade In Animation - 0.4s */
+@keyframes fadeInFast {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .book-appointment {
-    text-align: center;
-    padding: 4rem 1rem;
-    background-color: #f9f9f9;
-    font-family: "Roboto", sans-serif;
-  }
-  
-  .book-appointment h2 {
-    margin-bottom: 0.5rem;
-    font-size: 2rem;
-    font-family: "Roboto", sans-serif;
-  }
-  
-  .book-appointment p {
-    margin-bottom: 1rem;
-    font-size: 1rem;
-    color: #555;
-    font-family: "Roboto", sans-serif;
-  }
-  
-  .book-button {
-    background-color: black;
-    color: white;
-    padding: 0.8rem 4rem;
-    border: none;
-    border-radius: 4px;
-    font-size: 1rem;
-    font-family: "Roboto", sans-serif;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .book-button:hover {
-    background-color: #333;
-  }
+  text-align: center;
+  padding: 4rem 1rem;
+  background-color: #f9f9f9;
+  font-family: "Roboto", sans-serif;
 
-  .content-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 1410px;
-    margin: 0 auto;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
+  /* fade-in effect */
+  animation: fadeInFast 0.4s ease-out forwards;
+  opacity: 0;
+}
 
-  .text-section {
-    text-align: left;
-    flex: 1;
-  }
+.book-appointment h2 {
+  margin-bottom: 0.5rem;
+  font-size: 2rem;
+  font-family: "Roboto", sans-serif;
 
-  
+  animation: fadeInFast 0.4s ease-out forwards;
+  opacity: 0;
+  animation-delay: 0.4s;
+}
+
+.book-appointment p {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  color: #555;
+  font-family: "Roboto", sans-serif;
+
+  animation: fadeInFast 0.4s ease-out forwards;
+  opacity: 0;
+  animation-delay: 0.4s;
+}
+
+.book-button {
+  background-color: black;
+  color: white;
+  padding: 0.8rem 4rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-family: "Roboto", sans-serif;
+  cursor: pointer;
+  transition: background-color 0.4s ease;
+
+  animation: fadeInFast 0.4s ease-out forwards;
+  opacity: 0;
+  animation-delay: 0.4s;
+}
+
+.book-button:hover {
+  background-color: #333;
+}
+
+.content-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1410px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  animation: fadeInFast 0.4s ease-out forwards;
+  opacity: 0;
+  animation-delay: 0.4s;
+}
+
+.text-section {
+  text-align: left;
+  flex: 1;
+
+  animation: fadeInFast 0.4s ease-out forwards;
+  opacity: 0;
+  animation-delay: 0.4s;
+}
