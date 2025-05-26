@@ -64,6 +64,66 @@ footer {
     border-top: 1px solid #eee;
 }
 
+/* Tambahkan ini ke file RegisterPage.css Anda */
+
+.register-error {
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto 1.5rem auto;
+  padding: 0.75rem 1rem;
+  background-color: #fff0f0;
+  color: #d32f2f;
+  border: 1px solid #ffcdd2;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transform: translateY(-10px);
+  opacity: 0;
+  animation: errorSlideIn 0.3s ease-out forwards;
+}
+
+.register-error::before {
+  content: "⚠";
+  font-size: 1.1rem;
+}
+
+@keyframes errorSlideIn {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Update juga tombol loading untuk konsistensi */
+.register-form button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+/* Tambahan untuk memperbaiki spacing */
+.register-main {
+  padding: 2rem 1rem;
+}
+
+.register-form {
+  margin-bottom: 1.5rem;
+}
+
+.register-error svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
 /* Animasi reuse yang sama */
 @keyframes slideUpFadeIn {
     from {

@@ -2,6 +2,8 @@ const express = require('express');
 const mysql = require('mysql2/promise'); // Gunakan promise-based
 const cors = require('cors');
 const app = express();
+const bcrypt = require('bcrypt');
+const saltRounds = 10; // Jumlah putaran hashing untuk bcrypt
 
 // Database Configuration
 const dbConfig = {
@@ -37,6 +39,7 @@ app.post('/api/register', async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
+    // Validasi input
     if (!username || !email || !password) {
       return res.status(400).json({ 
         success: false, 
@@ -44,23 +47,38 @@ app.post('/api/register', async (req, res) => {
       });
     }
 
-    // Cek apakah user sudah ada
-    const [existingUsers] = await pool.query(
-      `SELECT * FROM users WHERE email = ? OR username = ?`,
-      [email, username]
+    // Cek apakah username sudah ada
+    const [existingUsername] = await pool.query(
+      `SELECT id_users FROM users WHERE username = ?`,
+      [username]
     );
 
-    if (existingUsers.length > 0) {
+    if (existingUsername.length > 0) {
       return res.status(409).json({ 
         success: false, 
-        message: 'Username atau email sudah digunakan' 
+        message: 'Username sudah digunakan' 
       });
     }
+
+    // Cek apakah email sudah ada
+    const [existingEmail] = await pool.query(
+      `SELECT id_users FROM users WHERE email = ?`,
+      [email]
+    );
+
+    if (existingEmail.length > 0) {
+      return res.status(409).json({ 
+        success: false, 
+        message: 'Email sudah digunakan' 
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     // Insert user baru
     await pool.query(
       `INSERT INTO users (username, email, password) VALUES (?, ?, ?)`,
-      [username, email, password] // Catatan: Password sebaiknya di-hash (misalnya pakai bcrypt)
+      [username, email, password] // Ganti dengan hashedPassword jika menggunakan bcrypt
     );
 
     res.status(201).json({ 
@@ -72,7 +90,8 @@ app.post('/api/register', async (req, res) => {
     console.error('Register error:', err);
     res.status(500).json({ 
       success: false, 
-      message: 'Terjadi kesalahan server saat registrasi' 
+      message: 'Terjadi kesalahan server saat registrasi',
+      error: err.message 
     });
   }
 });
@@ -311,43 +330,126 @@ app.post('/api/login', async (req, res) => {
       });
     }
 
-    const [rows] = await pool.query(
-      `SELECT * FROM users WHERE email = ? OR username = ?`, 
-      [identifier, identifier]
-    );
+    // Cek apakah identifier adalah email
+    if (identifier.includes('@')) {
+      const [rows] = await pool.query(
+        `SELECT * FROM users WHERE email = ? COLLATE utf8mb4_bin`, 
+        [identifier]
+      );
 
-    if (rows.length === 0) {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'User tidak ditemukan' 
+      if (rows.length === 0) {
+        return res.status(401).json({ 
+          success: false, 
+          message: 'Email tidak ditemukan' 
+        });
+      }
+
+      const user = rows[0];
+      
+      // Bandingkan password yang diinput dengan hash di database
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res.status(401).json({ 
+          success: false, 
+          message: 'Password salah' 
+        });
+      }
+
+      return res.json({
+        success: true,
+        user: {
+          id_users: user.id_users, 
+          username: user.username,
+          email: user.email
+        }
+      });
+    } else {
+      // Untuk username
+      const [rows] = await pool.query(
+        `SELECT * FROM users WHERE BINARY username = ?`, 
+        [identifier]
+      );
+
+      if (rows.length === 0) {
+        return res.status(401).json({ 
+          success: false, 
+          message: 'Username tidak ditemukan' 
+        });
+      }
+
+      const user = rows[0];
+      
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res.status(401).json({ 
+          success: false, 
+          message: 'Password salah' 
+        });
+      }
+
+      return res.json({
+        success: true,
+        user: {
+          id_users: user.id_users, 
+          username: user.username,
+          email: user.email
+        }
       });
     }
-
-    const user = rows[0];
-    
-    if (user.password !== password) {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Password salah' 
-      });
-    }
-
-    res.json({
-      success: true,
-      user: {
-        id_users: user.id_users, 
-        username: user.username,
-        email: user.email
-     }
-    });
-
-
 
   } catch (err) {
     console.error('Login error:', err);
     res.status(500).json({ 
       success: false, 
       message: 'Terjadi kesalahan server' 
+    });
+  }
+});
+
+app.post('/api/reset-password', async (req, res) => {
+  try {
+    const { identifier, newPassword } = req.body;
+
+    if (!identifier || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Username/email dan password baru wajib diisi'
+      });
+    }
+
+    // Cari user
+    const [rows] = await pool.query(
+      `SELECT * FROM users WHERE email = ? OR username = ? COLLATE utf8mb4_bin`,
+      [identifier, identifier]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'User tidak ditemukan'
+      });
+    }
+
+    // Hash password baru
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Update password yang sudah dihash
+    await pool.query(
+      `UPDATE users SET password = ? WHERE id_users = ?`,
+      [newPassword, rows[0].id_users]
+    );
+
+    res.json({
+      success: true,
+      message: 'Password berhasil diubah'
+    });
+
+  } catch (err) {
+    console.error('Reset password error:', err);
+    res.status(500).json({
+      success: false,
+      message: 'Terjadi kesalahan server'
     });
   }
 });
