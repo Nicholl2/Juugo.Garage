@@ -1,9 +1,23 @@
-/* ===== Layout ===== */
+/* Fade In Animation - 0.4s */
+@keyframes fadeInFast {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .history-page {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   font-family: 'roboto', sans-serif;
+
+  animation: fadeInFast 0.4s ease-out forwards;
+  opacity: 0;
 }
 
 .history-container {
@@ -13,25 +27,40 @@
   margin: 0 auto;
   padding: 2rem;
   box-sizing: border-box;
+
+  animation: fadeInFast 0.4s ease-out forwards;
+  opacity: 0;
+  animation-delay: 0.1s;
 }
 
 .history-header {
   text-align: center;
   margin-bottom: 2rem;
+
+  animation: fadeInFast 0.4s ease-out forwards;
+  opacity: 0;
+  animation-delay: 0.15s;
 }
 
 .history-header h1 {
   font-size: 2.5rem;
   color: #333;
   margin-bottom: 0.5rem;
+
+  animation: fadeInFast 0.4s ease-out forwards;
+  opacity: 0;
+  animation-delay: 0.2s;
 }
 
 .history-header p {
   color: #666;
   margin-bottom: 1.5rem;
+
+  animation: fadeInFast 0.4s ease-out forwards;
+  opacity: 0;
+  animation-delay: 0.25s;
 }
 
-/* ===== Buttons ===== */
 .create-order-btn {
   background-color: #2e7d32;
   color: #fff;
@@ -42,6 +71,10 @@
   font-weight: 700;
   transition: background-color 0.3s ease;
   margin-bottom: 60px;
+
+  animation: fadeInFast 0.4s ease-out forwards;
+  opacity: 0;
+  animation-delay: 0.3s;
 }
 
 .create-order-btn:hover {
@@ -56,9 +89,13 @@
   margin-bottom: 1rem;
   font-weight: 700;
   font-size: 1rem;
+
+  animation: fadeInFast 0.4s ease-out forwards;
+  opacity: 0;
+  animation-delay: 0.35s;
 }
 
-/* ===== Cards ===== */
+/* Cards */
 .history-card {
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -66,6 +103,10 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
   background-color: #fff;
+
+  animation: fadeInFast 0.2s ease-out forwards;
+  opacity: 0;
+  animation-delay: 0.2s;
 }
 
 .history-card:hover {
@@ -73,19 +114,25 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* ===== History List ===== */
 .history-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1rem;
+
+  animation: fadeInFast 0.4s ease-out forwards;
+  opacity: 0;
+  animation-delay: 0.45s;
 }
 
-/* ===== Order Meta and Status ===== */
 .order-meta {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.5rem;
+
+  animation: fadeInFast 0.4s ease-out forwards;
+  opacity: 0;
+  animation-delay: 0.5s;
 }
 
 .order-meta h3,
@@ -101,6 +148,10 @@
   text-transform: capitalize;
   font-size: 0.85rem;
   white-space: nowrap;
+
+  animation: fadeInFast 0.4s ease-out forwards;
+  opacity: 0;
+  animation-delay: 0.55s;
 }
 
 /* Status Colors */
@@ -119,27 +170,41 @@
   color: #d32f2f;
 }
 
-/* ===== Dates & Previews ===== */
 .order-date {
   color: #666;
   font-size: 0.9rem;
   margin-bottom: 0.5rem;
+
+  animation: fadeInFast 0.4s ease-out forwards;
+  opacity: 0;
+  animation-delay: 0.6s;
 }
 
 .service-preview {
   color: #444;
   font-weight: 600;
+
+  animation: fadeInFast 0.4s ease-out forwards;
+  opacity: 0;
+  animation-delay: 0.65s;
 }
 
-/* ===== Detailed View ===== */
 .detailed-view {
   max-width: 600px;
   margin: 0 auto;
+
+  animation: fadeInFast 0.4s ease-out forwards;
+  opacity: 0;
+  animation-delay: 0.7s;
 }
 
 .customer-details,
 .service-details {
   margin-top: 1.5rem;
+
+  animation: fadeInFast 0.4s ease-out forwards;
+  opacity: 0;
+  animation-delay: 0.75s;
 }
 
 .customer-details h4,
@@ -156,7 +221,6 @@
   color: #444;
 }
 
-/* ===== Order Total ===== */
 .order-total {
   display: flex;
   justify-content: space-between;
@@ -167,7 +231,6 @@
   padding-top: 1rem;
 }
 
-/* ===== Loading, Error & Empty State ===== */
 .loading,
 .error-message,
 .empty-state {
@@ -197,7 +260,6 @@
   background-color: #9a0007;
 }
 
-/* ===== Footer ===== */
 .history-footer {
   text-align: center;
   padding: 1.5rem;
@@ -206,7 +268,6 @@
   font-size: 0.9rem;
 }
 
-/* ===== Detail View: tombol back dan detail side by side ===== */
 .order-detail-view {
   display: flex;
   align-items: flex-start;
@@ -236,4 +297,98 @@
 .history-card.detailed-view {
   flex: 1;
   padding: 1.5rem 2rem;
+}
+
+/* Tambahkan style baru */
+.edit-button {
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  margin-top: 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.edit-button:hover {
+  background-color: #0b7dda;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.cancel-button {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+  flex: 1;
+}
+
+.cancel-button:hover {
+  background-color: #d32f2f;
+}
+
+.update-button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+  flex: 1;
+}
+
+.update-button:hover {
+  background-color: #45a049;
+}
+
+input:disabled {
+  background-color: #f5f5f5;
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+/* Merapikan tampilan form di detail order */
+.customer-details input:disabled,
+.service-details input:disabled {
+  background-color: #e0e0e0; /* abu-abu gelap */
+  border: 1px solid #ccc;   /* border abu-abu terang */
+  color: #555;              /* teks sedikit lebih gelap agar lebih kontras */
+}
+
+/* Input style lebih rapi dan konsisten */
+.customer-details input,
+.service-details input,
+.customer-details textarea,
+.service-details textarea {
+  width: 100%;
+  max-width: 100%;
+  padding: 0.6rem 0.8rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  background-color: #fff;
+  color: #333;
+}
+
+/* Label agar ada jarak */
+.customer-details label,
+.service-details label {
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+  color: #333;
+  display: block;
 }

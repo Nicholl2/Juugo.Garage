@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import Navbar from '../components/Navbar/Navbar';
 import ServiceSection from '../components/ServiceSection/ServiceSection';
 import Footer from '../components/Footer/Footer';
-import './ServicePage.css'; // optional styling
+import './ServicePage.css';
 import { useNavigate } from 'react-router-dom';
 
 const ServicePage = () => {

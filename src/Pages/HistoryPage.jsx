@@ -9,6 +9,8 @@ const HistoryPage = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editData, setEditData] = useState(null);
 
   useEffect(() => {
     document.title = 'History | Juugo.Garage';
@@ -93,48 +95,146 @@ const HistoryPage = () => {
         </div>
 
         {selectedOrder ? (
-          <div className="order-detail-view">
-            <button 
-              className="back-button"
-              onClick={() => setSelectedOrder(null)}
-            >
-              &larr; Back to List
-            </button>
-            
-            <div className="history-card detailed-view">
-              <div className="order-meta">
-                <h3>Order #{selectedOrder.id}</h3>
-                <span className={`status-badge ${selectedOrder.status.toLowerCase()}`}>
-                  {selectedOrder.status}
-                </span>
-              </div>
-              
-              <p className="order-date">{selectedOrder.date}</p>
-              
-              <div className="customer-details">
-                <h4>Customer Information</h4>
-                <p><strong>Name:</strong> {selectedOrder.full_name}</p>
-                <p><strong>Phone:</strong> {selectedOrder.phone}</p>
-                <p><strong>Vehicle License:</strong> {selectedOrder.licence}</p>
-              </div>
-              
-              <div className="service-details">
-                <h4>Service Performed</h4>
-                {selectedOrder.items.map((item, index) => (
-                  <div key={index} className="service-item">
-                    <span>{item.name}</span>
-                    <span>Rp {parseInt(item.price).toLocaleString('id-ID')}</span>
-                  </div>
-                ))}
-              </div>
-              
-              <div className="order-total">
-                <strong>Total</strong>
-                <strong>Rp {parseInt(calculateTotal(selectedOrder.items)).toLocaleString('id-ID')}</strong>
-              </div>
-            </div>
+  <div className="order-detail-view">
+    <button 
+      className="back-button"
+      onClick={() => {
+        setSelectedOrder(null);
+        setIsEditing(false);
+      }}
+    >
+      &larr; Back to List
+    </button>
+    
+    <div className="history-card detailed-view">
+      <div className="order-meta">
+        <h3>Order #{selectedOrder.id}</h3>
+        <span className={`status-badge ${selectedOrder.status.toLowerCase()}`}>
+          {selectedOrder.status}
+        </span>
+      </div>
+      
+      <p className="order-date">{selectedOrder.date}</p>
+      
+      <div className="customer-details">
+        <h4>Customer Information</h4>
+        <div className="form-group">
+          <label>Name:</label>
+          <input 
+            type="text" 
+            value={isEditing ? editData.full_name : selectedOrder.full_name}
+            onChange={(e) => setEditData({
+              ...editData,
+              full_name: e.target.value
+            })}
+            disabled={!isEditing}
+          />
+        </div>
+        <div className="form-group">
+          <label>Phone:</label>
+          <input 
+            type="text" 
+            value={isEditing ? editData.phone : selectedOrder.phone}
+            onChange={(e) => setEditData({
+              ...editData,
+              phone: e.target.value
+            })}
+            disabled={!isEditing}
+          />
+        </div>
+        <div className="form-group">
+          <label>Vehicle License:</label>
+          <input 
+            type="text" 
+            value={isEditing ? editData.licence : selectedOrder.licence}
+            onChange={(e) => setEditData({
+              ...editData,
+              licence: e.target.value
+            })}
+            disabled={!isEditing}
+          />
+        </div>
+      </div>
+      
+      <div className="service-details">
+        <h4>Service Performed</h4>
+        {selectedOrder.items.map((item, index) => (
+          <div key={index} className="service-item">
+            <span>{item.name}</span>
+            <span>Rp {parseInt(item.price).toLocaleString('id-ID')}</span>
           </div>
-        ) : (
+        ))}
+      </div>
+      
+      <div className="order-total">
+        <strong>Total</strong>
+        <strong>Rp {parseInt(calculateTotal(selectedOrder.items)).toLocaleString('id-ID')}</strong>
+      </div>
+
+      {!isEditing ? (
+        <button 
+          className="edit-button"
+          onClick={() => {
+            setIsEditing(true);
+            setEditData({
+              full_name: selectedOrder.full_name,
+              phone: selectedOrder.phone,
+              email: selectedOrder.email,
+              licence: selectedOrder.licence
+            });
+          }}
+        >
+          Edit Order
+        </button>
+      ) : (
+        <div className="edit-actions">
+          <button 
+            className="cancel-button"
+            onClick={() => setIsEditing(false)}
+          >
+            Cancel
+          </button>
+          <button 
+            className="update-button"
+            onClick={async () => {
+              try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`http://localhost:5000/api/orders/${selectedOrder.id}`, {
+                  method: 'PUT',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                  },
+                  body: JSON.stringify(editData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                  alert('Order updated successfully!');
+                  setSelectedOrder({
+                    ...selectedOrder,
+                    ...editData
+                  });
+                  setIsEditing(false);
+                  navigate('/history'); // Redirect ke halaman booking
+                } else {
+                  throw new Error(result.message || 'Failed to update order');
+                }
+              } catch (error) {
+                console.error('Update error:', error);
+                alert(`Error updating order: ${error.message}`);
+              }
+            }}
+          >
+            Update Order
+          </button>
+        </div>
+      )}
+    </div>
+  </div>
+) : (
+
           <div className="history-list">
             {orders.length === 0 ? (
               <div className="empty-state">

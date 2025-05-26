@@ -1,9 +1,25 @@
+/* Fade In Animation - 0.4s */
+@keyframes fadeInFast {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .services {
   padding: 4rem 2rem;
   max-width: 1400px;
   margin: 0 auto;
   border-color: #d7bf76;
   text-justify: auto;
+
+  /* fade-in */
+  animation: fadeInFast 0.4s ease-out forwards;
+  opacity: 0;
 }
 
 .services h2 {
@@ -12,6 +28,10 @@
   font-weight: bold;
   font-family: "Roboto", sans-serif;
   margin-bottom: 3rem;
+
+  animation: fadeInFast 0.4s ease-out forwards;
+  opacity: 0;
+  animation-delay: 0.1s;
 }
 
 .service {
@@ -21,6 +41,10 @@
   font-family: "Roboto", sans-serif;
   gap: 2rem;
   margin-bottom: 4rem;
+
+  animation: fadeInFast 0.4s ease-out forwards;
+  opacity: 0;
+  animation-delay: 0.15s;
 }
 
 /* Alternate layout (zig-zag) untuk genap */
@@ -30,6 +54,10 @@
 
 .text {
   flex: 1;
+
+  animation: fadeInFast 0.4s ease-out forwards;
+  opacity: 0;
+  animation-delay: 0.2s;
 }
 
 .text h3 {
@@ -38,6 +66,10 @@
   font-family: "Roboto", sans-serif;
   text-align: justify;
   margin-bottom: 0.75rem;
+
+  animation: fadeInFast 0.4s ease-out forwards;
+  opacity: 0;
+  animation-delay: 0.25s;
 }
 
 .text p {
@@ -46,6 +78,10 @@
   font-family: "Roboto", sans-serif;
   text-align: justify;
   line-height: 1.6;
+
+  animation: fadeInFast 0.4s ease-out forwards;
+  opacity: 0;
+  animation-delay: 0.3s;
 }
 
 /* Responsive untuk layar kecil */
@@ -67,51 +103,3 @@
     max-width: 100%;
   }
 }
-
-
-/* .services {
-    padding: 4rem 2rem;
-    background-color: #fff;
-  }
-  
-  .services h2 {
-    text-align: center;
-    font-size: 2rem;
-    margin-bottom: 3rem;
-    font-weight: 700;
-  }
-  
-  .service {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin-bottom: 4rem;
-    gap: 2rem;
-  }
-  
-  .service:nth-child(even) {
-    flex-direction: row-reverse;
-  }
-  
-  .service h3 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-  }
-  
-  .service p {
-    font-size: 1rem;
-    line-height: 1.6;
-    color: #333;
-  }
-  
-  @media (max-width: 768px) {
-    .service {
-      flex-direction: column !important;
-      text-align: center;
-    }
-  
-    .service:nth-child(even) {
-      flex-direction: column !important;
-    }
-  }
-   */

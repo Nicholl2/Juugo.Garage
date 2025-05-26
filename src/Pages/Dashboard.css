@@ -37,6 +37,7 @@
   padding: 80px 20px;
   position: relative;
   z-index: 1;
+  animation: fadeInUp 1s ease forwards;
 }
 
 .hero-content h1 {
@@ -164,13 +165,13 @@
   padding: 30px;
   border-radius: 12px;
   box-shadow: 0 10px 20px rgba(0,0,0,0.08);
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   border: 1px solid rgba(0,0,0,0.05);
 }
 
 .product-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 15px 30px rgba(0,0,0,0.12);
+  transform: translateY(-10px) scale(1.03);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.15);
 }
 
 .product-card img {
@@ -182,7 +183,7 @@
 }
 
 .product-card:hover img {
-  transform: scale(1.05);
+  transform: scale(1.1);
 }
 
 .product-card h3 {
@@ -220,7 +221,7 @@
   padding: 35px 25px;
   border-radius: 12px;
   box-shadow: 0 8px 16px rgba(0,0,0,0.08);
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   position: relative;
   overflow: hidden;
 }
@@ -236,8 +237,8 @@
 }
 
 .service-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.15);
 }
 
 .service-card h3 {
@@ -266,7 +267,7 @@
   font-size: 1.1rem;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
   font-weight: 500;
   letter-spacing: 0.5px;
   text-transform: uppercase;
@@ -281,8 +282,13 @@
 
 .cta-button:hover {
   background-color: #121212;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(43, 108, 176, 0.1);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 6px 15px rgba(43, 108, 176, 0.15);
+}
+
+.cta-button:active, .view-all:active {
+  transform: scale(0.95);
+  transition: transform 0.1s ease;
 }
 
 .view-all {
@@ -293,8 +299,8 @@
 }
 
 .view-all:hover {
-  background-color: rgba(43, 108, 176, 0.1);
-  transform: translateY(-2px);
+  background-color: rgba(43, 108, 176, 0.15);
+  transform: translateY(-3px) scale(1.05);
 }
 
 /* Footer */
@@ -325,6 +331,7 @@
 .main-logo {
   height: 70px;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+  animation: bounceIn 1.5s ease;
 }
 
 /* Responsive Adjustments */
@@ -362,10 +369,19 @@
 .section-wrapper {
   padding: 60px 0;
   border-bottom: 1px solid #e2e8f0;
+  opacity: 0;
+  animation: fadeInUp 0.7s ease forwards;
+  animation-delay: 0.3s;
+  animation-fill-mode: forwards;
+  will-change: opacity, transform;
 }
 
-.section-wrapper:last-of-type {
-  border-bottom: none;
+.section-wrapper:nth-of-type(2) {
+  animation-delay: 0.5s;
+}
+
+.section-wrapper:nth-of-type(3) {
+  animation-delay: 0.7s;
 }
 
 /* ✅ Tambahan: Sembunyikan tombol hitam di book-section */
@@ -373,6 +389,26 @@
   display: none;
 }
 
+/* ===== Animations & Keyframes ===== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-
-
+@keyframes bounceIn {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-15px);
+  }
+  60% {
+    transform: translateY(-7px);
+  }
+}

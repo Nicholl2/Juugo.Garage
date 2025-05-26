@@ -106,59 +106,7 @@ const Settings = () => {
     setError(error.message || 'Terjadi kesalahan saat mengupdate profil');
   }
 };
-
-//   const handleUpdate = async (e) => {
-//   e.preventDefault();
-
-//   console.log('👤 User ID sebelum update:', userId);
-//   console.log('🔄 Memulai proses update...');
-  
-//   try {
-//     console.log('📤 Data yang dikirim:', {
-//       username: formData.username,
-//       email: formData.email,
-//       password: formData.password || '(tidak diubah)'
-//     });
-
-//     const response = await fetch(`http://localhost:5000/api/users/${userId}`, {
-//       method: 'PUT',
-//       headers: {
-//         'Content-Type': 'application/json',
-//       },
-//       body: JSON.stringify({
-//         username: formData.username,
-//         email: formData.email,
-//         password: formData.password || ''
-//       }),
-//     });
-
-//     console.log('📥 Response dari server:', response);
-
-//     const data = await response.json();
-//     console.log('📊 Data response:', data);
-
-//     if (!response.ok) {
-//       throw new Error(data.message || 'Update gagal tanpa pesan error');
-//     }
-
-//     // Update local storage
-//     const updatedUser = {
-//       ...JSON.parse(localStorage.getItem('user')),
-//       username: data.user.username,
-//       email: data.user.email
-//     };
-//     localStorage.setItem('user', JSON.stringify(updatedUser));
-    
-//     console.log('✅ Update berhasil!');
-//     alert('Profil berhasil diperbarui!');
-//     setError('');
-
-//   } catch (error) {
-//     console.error('❌ Error update profile:', error);
-//     setError(error.message || 'Terjadi kesalahan saat mengupdate profil');
-//   }
-// };
-  
+ 
   const handleDelete = async () => {
     const confirmDelete = window.confirm('Are you sure you want to delete your account? This cannot be undone!');
     if (!confirmDelete) return;
