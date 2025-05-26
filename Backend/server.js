@@ -78,7 +78,7 @@ app.post('/api/register', async (req, res) => {
     // Insert user baru
     await pool.query(
       `INSERT INTO users (username, email, password) VALUES (?, ?, ?)`,
-      [username, email, password] // Ganti dengan hashedPassword jika menggunakan bcrypt
+      [username, email, hashedPassword] // Ganti dengan hashedPassword jika menggunakan bcrypt
     );
 
     res.status(201).json({ 
@@ -275,7 +275,7 @@ app.get('/api/history', async (req, res) => {
       SELECT 
         o.id_order AS id,
         DATE_FORMAT(o.order_date, '%d %M %Y') AS date,
-        'Completed' AS status,
+        'Diproses' AS status,
         o.full_name,
         o.phone,
         o.licence,
@@ -437,7 +437,7 @@ app.post('/api/reset-password', async (req, res) => {
     // Update password yang sudah dihash
     await pool.query(
       `UPDATE users SET password = ? WHERE id_users = ?`,
-      [newPassword, rows[0].id_users]
+      [hashedPassword, rows[0].id_users]
     );
 
     res.json({
@@ -521,7 +521,6 @@ app.put('/api/users/:id', async (req, res) => {
     res.status(500).json({ success: false, message: 'Terjadi kesalahan server' });
   }
 });
-
 
 // Endpoint untuk update order
 app.put('/api/orders/:id', async (req, res) => {

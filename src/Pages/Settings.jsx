@@ -15,6 +15,7 @@ const Settings = () => {
   });
   const [userId, setUserId] = useState(null);
   const [error, setError] = useState('');
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
 
   useEffect(() => {
     document.title = 'Settings | Juugo.Garage';
@@ -108,14 +109,11 @@ const Settings = () => {
 };
  
   const handleDelete = async () => {
-    const confirmDelete = window.confirm('Are you sure you want to delete your account? This cannot be undone!');
-    if (!confirmDelete) return;
-
     try {
       const response = await fetch(`http://localhost:5000/api/users/${userId}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}` // Jika menggunakan JWT
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
 
@@ -126,11 +124,12 @@ const Settings = () => {
       localStorage.removeItem('isLoggedIn');
       localStorage.removeItem('user');
       localStorage.removeItem('token');
-      alert('Account deleted successfully!');
+      setShowDeletePopup(false);
       navigate('/');
     } catch (error) {
       console.error('Delete error:', error);
       setError(error.message || 'Something went wrong');
+      setShowDeletePopup(false);
     }
   };
 
@@ -163,240 +162,112 @@ const Settings = () => {
 
 
   return (
-    <>
-      <Navbar />
-      <div className="settings-container">
-        {error && <div className="error-banner">{error}</div>}
+  <>
+    <Navbar />
 
-        <div className="settings-header">
-          <div className="settings-avatar">
-            <img src={avatar} alt="User avatar" />
-            <h2>{formData.username || 'User'}</h2>
-            <span className="badge">Customer</span>
-          </div>
-        </div>
-
-        <form className="settings-form" onSubmit={handleUpdate}>
-          <h2>Edit Profile</h2>
-
-          <div className="form-group">
-            <label>Username</label>
-            <input
-              type="text"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Email</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label>New Password (leave blank to keep current)</label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="••••••••"
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Confirm Password</label>
-            <input
-              type="password"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              placeholder="••••••••"
-            />
-          </div>
-
-          <div className="form-actions">
-            <button type="button" className="btn-secondary" onClick={() => navigate('/dashboard')}>
-              Cancel
-            </button>
-            <button type="submit" className="btn-primary">
-              Save Changes
-            </button>
-          </div>
-        </form>
-
-        <div className="danger-zone">
-          <h3>Danger Zone</h3>
-          <p>Permanently delete your account and all data</p>
-          <button className="btn-danger" onClick={handleDelete}>
-            Delete Account
+    {/* POPUP HARUS DI LUAR DARI settings-container */}
+    {showDeletePopup && (
+    <div className="delete-popup-overlay">
+      <div className="delete-popup">
+        <h3>Delete Account?</h3>
+        <p className="delete-warning">⚠️ Akun akan dihapus <strong>PERMANEN</strong> dan tidak dapat dikembalikan!</p>
+        <div className="popup-buttons">
+          <button 
+            className="btn-secondary" 
+            onClick={() => setShowDeletePopup(false)}
+          >
+            Decline
+          </button>
+          <button 
+            className="btn-danger" 
+            onClick={handleDelete}
+          >
+            Confirm
           </button>
         </div>
       </div>
-    </>
-  );
+    </div>
+  )}
+
+    <div className="settings-container">
+      {error && <div className="error-banner">{error}</div>}
+
+      <div className="settings-header">
+        <div className="settings-avatar">
+          <img src={avatar} alt="User avatar" />
+          <h2>{formData.username || 'User'}</h2>
+          <span className="badge">Customer</span>
+        </div>
+      </div>
+
+      <form className="settings-form" onSubmit={handleUpdate}>
+        <h2>Edit Profile</h2>
+
+        <div className="form-group">
+          <label>Username</label>
+          <input
+            type="text"
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Email</label>
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label>New Password (leave blank to keep current)</label>
+          <input
+            type="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            placeholder="••••••••"
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Confirm Password</label>
+          <input
+            type="password"
+            name="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            placeholder="••••••••"
+          />
+        </div>
+
+        <div className="form-actions">
+          <button type="button" className="btn-secondary" onClick={() => navigate('/dashboard')}>
+            Cancel
+          </button>
+          <button type="submit" className="btn-primary">
+            Save Changes
+          </button>
+        </div>
+      </form>
+
+      <div className="danger-zone">
+        <h3>Danger Zone</h3>
+        <p>Permanently delete your account and all data</p>
+        <button className="btn-danger" onClick={() => setShowDeletePopup(true)}>
+          Delete Account
+        </button>
+      </div>
+    </div>
+  </>
+);
 };
 
 export default Settings;
 
-// import React, { useState, useEffect } from 'react';
-// import { useNavigate } from 'react-router-dom';
-// import Navbar from '../components/Navbar/Navbar'; 
-// import './Settings.css';
-// import avatar from '../assets/sigma.jpg';
-
-// const Settings = () => {
-//   const navigate = useNavigate();
-//   const [name, setName] = useState('');
-//   const [email, setEmail] = useState('');
-//   const [password, setPassword] = useState('');
-//   const [userId, setUserId] = useState(null);
-
-//   useEffect(() => {
-//     document.title = 'Settings | Juugo.Garage';
-
-//     const isLoggedIn = localStorage.getItem('isLoggedIn');
-//     const userData = localStorage.getItem('user');
-
-//     if (isLoggedIn !== 'true' || !userData) {
-//       navigate('/login');
-//       return;
-//     }
-
-//     const user = JSON.parse(userData);
-//     setName(user.username || '');
-//     setEmail(user.email || '');
-//     setUserId(user.id_users);
-//   }, [navigate]);
-
-//   const handleUpdate = async () => {
-//     if (!name || !email || !password) {
-//       alert('All fields are required!');
-//       return;
-//     }
-
-//     if (password.length < 8) {
-//       alert('Password must be at least 8 characters');
-//       return;
-//     }
-
-//     try {
-//       const response = await fetch(`http://localhost:3000/api/users/${userId}`, {
-//         method: 'PUT',
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify({ username: name, email, password }),
-//       });
-
-//       if (response.ok) {
-//         const updatedUser = await response.json();
-//         localStorage.setItem('user', JSON.stringify(updatedUser));
-//         alert('Profile updated successfully!');
-//       } else {
-//         alert('Failed to update profile');
-//       }
-//     } catch (error) {
-//       console.error('Error updating profile:', error);
-//       alert('Something went wrong!');
-//     }
-//   };
-
-//   const handleDelete = async () => {
-//     const confirmDelete = window.confirm('Are you sure you want to delete your account?');
-//     if (!confirmDelete) return;
-
-//     try {
-//       const response = await fetch(`http://localhost:3000/api/users/${userId}`, {
-//         method: 'DELETE',
-//       });
-
-//       if (response.ok) {
-//         localStorage.removeItem('isLoggedIn');
-//         localStorage.removeItem('user');
-//         alert('Account deleted!');
-//         navigate('/');
-//       } else {
-//         alert('Failed to delete account');
-//       }
-//     } catch (error) {
-//       console.error('Error deleting account:', error);
-//       alert('Something went wrong!');
-//     }
-//   };
-
-//   return (
-//     <>
-//       <Navbar />
-//       <div className="settings-container">
-//         <div className="settings-header">
-//           <div className="settings-avatar">
-//             <img src={avatar} alt="User avatar" />
-//             <h2>{name || 'User'}</h2>
-//             <span className="badge">Customer</span>
-//             <p>Update your profile information</p>
-//             <div className="settings-header-buttons">
-//               <button className="btn-outline" onClick={() => navigate('/')}>Cancel</button>
-//               <button className="btn-primary" onClick={handleUpdate}>Save Changes</button>
-//             </div>
-//           </div>
-//         </div>
-
-//         <div className="settings-form">
-//           <h2>Edit Profile</h2>
-//           <p>Update your profile information</p>
-
-//           <label>Username</label>
-//           <input
-//             type="text"
-//             placeholder="Enter your username"
-//             value={name}
-//             onChange={(e) => setName(e.target.value)}
-//           />
-
-//           <label>Email</label>
-//           <input
-//             type="email"
-//             placeholder="Enter your email"
-//             value={email}
-//             onChange={(e) => setEmail(e.target.value)}
-//           />
-
-//           <label>Password</label>
-//           <input
-//             type="password"
-//             placeholder="Enter your new password"
-//             value={password}
-//             onChange={(e) => setPassword(e.target.value)}
-//           />
-//           <small>Password must be at least 8 characters</small>
-
-//           <button className="btn-primary" onClick={handleUpdate}>
-//             Update Profile
-//           </button>
-
-//           <div className="delete-section">
-//             <p>Delete Account</p>
-//             <button className="btn-danger" onClick={handleDelete}>
-//               Yes, I want to delete my account
-//             </button>
-//           </div>
-//         </div>
-//       </div>
-
-//       <footer style={{ textAlign: 'center', padding: '1rem' }}>
-//         <p>© 2025 Juugo.Garage. All rights reserved.</p>
-//       </footer>
-//     </>
-//   );
-// };
-
-// export default Settings;
